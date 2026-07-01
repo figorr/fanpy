@@ -37,8 +37,9 @@ async def async_setup_entry(
             entities.append(FanButton(entry, prefix, name, "intensidad_alta", f"{name} Intensidad Alta", "mdi:brightness-7"))
             entities.append(FanButton(entry, prefix, name, "intensidad_baja", f"{name} Intensidad Baja", "mdi:brightness-1"))
 
-    for i in range(1, num_speeds + 1):
-        entities.append(FanButton(entry, prefix, name, f"velocidad_{i}", f"{name} Velocidad {i}", "mdi:fan"))
+    if num_speeds > 1:
+        for i in range(1, num_speeds + 1):
+            entities.append(FanButton(entry, prefix, name, f"velocidad_{i}", f"{name} Velocidad {i}", "mdi:fan"))
 
     async_add_entities(entities)
 

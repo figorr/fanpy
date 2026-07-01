@@ -2,35 +2,47 @@
   "config": {
     "step": {
       "user": {
-        "title": "Fanpy — Area",
-        "description": "Select the area where the fan is located. The name and prefix will be auto-generated.",
-        "data": {
-          "area": "Area"
-        }
-      },
-      "mode": {
         "title": "Fanpy — Mode",
         "description": "Choose how this fan is controlled.",
         "data": {
           "mode": "Control mode"
         }
       },
-      "direct": {
-        "title": "Fanpy — Direct Mode",
-        "description": "Select the switch and light entities for this fan.",
+      "area": {
+        "title": "Fanpy — Area",
+        "description": "Select the area where the fan is located. The name and prefix will be auto-generated. If the area doesn't exist, create it in Settings > Areas and restart the wizard.",
+        "data": {
+          "area": "Area"
+        }
+      },
+      "direct_entity": {
+        "title": "Fanpy — Fan & Speeds",
+        "description": "Select the switch entity that controls this fan and set the number of speeds.",
         "data": {
           "entity_fan": "Fan entity (switch.*)",
-          "entity_light": "Light entity (light.*)",
+          "num_speeds": "Number of speeds"
+        }
+      },
+      "direct_light": {
+        "title": "Fanpy — Light",
+        "description": "Configure the fan light capabilities.",
+        "data": {
           "has_light": "Has light",
           "has_light_temperature": "Color temperature control",
           "has_light_intensity": "Brightness control"
         }
       },
-      "helpers_features": {
-        "title": "Fanpy — Features",
-        "description": "Configure the fan capabilities.",
+      "helpers_speeds": {
+        "title": "Fanpy — Speeds",
+        "description": "Set the number of speeds this fan has.",
         "data": {
-          "num_speeds": "Number of speeds (1-6)",
+          "num_speeds": "Number of speeds"
+        }
+      },
+      "helpers_light": {
+        "title": "Fanpy — Light",
+        "description": "Configure the fan light capabilities.",
+        "data": {
           "has_light": "Has light",
           "has_light_temperature": "Color temperature control",
           "has_light_intensity": "Brightness control"
@@ -38,10 +50,9 @@
       },
       "helpers_broadlink": {
         "title": "Fanpy — Broadlink & Commands",
-        "description": "Configure the Broadlink device and the learned command names.",
+        "description": "Select the Broadlink device and configure the commands learned via remote.learn_command. Use the same device and command names you used when learning each RF signal.",
         "data": {
-          "broadlink_device_id": "Broadlink device ID",
-          "broadlink_entity_id": "Broadlink remote entity",
+          "broadlink_device_id": "Broadlink device",
           "remote_device": "Remote device name",
           "command_on": "Power ON command",
           "command_off": "Power OFF command",
@@ -54,14 +65,18 @@
       },
       "helpers_commands_velocidad": {
         "title": "Fanpy — Speed Commands",
-        "description": "Configure the command names for each speed level.",
+        "description": "Configure the command names for each speed level, matching what you used in remote.learn_command.",
         "data": {
           "command_velocidad_1": "Speed 1 command",
           "command_velocidad_2": "Speed 2 command",
           "command_velocidad_3": "Speed 3 command",
           "command_velocidad_4": "Speed 4 command",
           "command_velocidad_5": "Speed 5 command",
-          "command_velocidad_6": "Speed 6 command"
+          "command_velocidad_6": "Speed 6 command",
+          "command_velocidad_7": "Speed 7 command",
+          "command_velocidad_8": "Speed 8 command",
+          "command_velocidad_9": "Speed 9 command",
+          "command_velocidad_10": "Speed 10 command"
         }
       }
     },
@@ -69,7 +84,7 @@
       "unknown": "Unexpected error",
       "invalid_area": "Please select a valid area",
       "invalid_entity": "Please select a valid entity",
-      "invalid_speeds": "Number of speeds must be between 1 and 6"
+      "invalid_speeds": "Number of speeds must be between 1 and 10"
     },
     "abort": {
       "already_configured": "This area is already configured"

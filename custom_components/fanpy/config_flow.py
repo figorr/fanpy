@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.const import CONF_NAME, CONF_MODE
+from homeassistant.const import CONF_MODE
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import config_validation as cv, selector
 
@@ -31,11 +31,6 @@ def _build_schemas(
 
     if step == "user":
         return vol.Schema({
-            vol.Required(CONF_AREA): selector.AreaSelector(),
-        })
-
-    if step == "mode":
-        return vol.Schema({
             vol.Required(CONF_MODE, default=data.get(CONF_MODE, CONF_MODE_HELPERS)): selector.SelectSelector(
                 selector.SelectSelectorConfig(
                     options=[CONF_MODE_HELPERS, CONF_MODE_DIRECT],
@@ -44,47 +39,79 @@ def _build_schemas(
             ),
         })
 
-    if step == "direct":
+    if step == "area":
+        return vol.Schema({
+            vol.Required(CONF_AREA): selector.AreaSelector(),
+        })
+
+    if step == "direct_entity":
         return vol.Schema({
             vol.Required(CONF_ENTITY_FAN, default=data.get(CONF_ENTITY_FAN, "")): selector.EntitySelector(
                 selector.EntitySelectorConfig(domain="switch"),
             ),
-            vol.Required(CONF_ENTITY_LIGHT, default=data.get(CONF_ENTITY_LIGHT, "")): selector.EntitySelector(
-                selector.EntitySelectorConfig(domain="light"),
+            vol.Required(CONF_NUM_SPEEDS, default=data.get(CONF_NUM_SPEEDS, 1)): selector.NumberSelector(
+                selector.NumberSelectorConfig(
+                    min=MIN_SPEEDS, max=MAX_SPEEDS, step=1,
+                    mode=selector.NumberSelectorMode.DROPDOWN,
+                )
             ),
-            vol.Optional(CONF_HAS_LIGHT, default=data.get(CONF_HAS_LIGHT, True)): selector.BooleanSelector(),
-            vol.Optional(CONF_HAS_LIGHT_TEMPERATURE, default=data.get(CONF_HAS_LIGHT_TEMPERATURE, False)): selector.BooleanSelector(),
-            vol.Optional(CONF_HAS_LIGHT_INTENSITY, default=data.get(CONF_HAS_LIGHT_INTENSITY, False)): selector.BooleanSelector(),
         })
 
-    if step == "helpers_features":
+    if step == "direct_light":
+        schema = {
+            vol.Optional(CONF_HAS_LIGHT, default=data.get(CONF_HAS_LIGHT, True)): selector.BooleanSelector(),
+        }
+        if data.get(CONF_HAS_LIGHT, True):
+            schema.update({
+                vol.Optional(CONF_HAS_LIGHT_TEMPERATURE, default=data.get(CONF_HAS_LIGHT_TEMPERATURE, False)): selector.BooleanSelector(),
+                vol.Optional(CONF_HAS_LIGHT_INTENSITY, default=data.get(CONF_HAS_LIGHT_INTENSITY, False)): selector.BooleanSelector(),
+            })
+        return vol.Schema(schema)
+
+    if step == "helpers_speeds":
         return vol.Schema({
             vol.Required(CONF_NUM_SPEEDS, default=data.get(CONF_NUM_SPEEDS, 6)): selector.NumberSelector(
                 selector.NumberSelectorConfig(
                     min=MIN_SPEEDS, max=MAX_SPEEDS, step=1,
-                    mode=selector.NumberSelectorMode.BOX,
+                    mode=selector.NumberSelectorMode.DROPDOWN,
                 )
             ),
-            vol.Optional(CONF_HAS_LIGHT, default=data.get(CONF_HAS_LIGHT, True)): selector.BooleanSelector(),
-            vol.Optional(CONF_HAS_LIGHT_TEMPERATURE, default=data.get(CONF_HAS_LIGHT_TEMPERATURE, True)): selector.BooleanSelector(),
-            vol.Optional(CONF_HAS_LIGHT_INTENSITY, default=data.get(CONF_HAS_LIGHT_INTENSITY, True)): selector.BooleanSelector(),
         })
+
+    if step == "helpers_light":
+        schema = {
+            vol.Optional(CONF_HAS_LIGHT, default=data.get(CONF_HAS_LIGHT, True)): selector.BooleanSelector(),
+        }
+        if data.get(CONF_HAS_LIGHT, True):
+            schema.update({
+                vol.Optional(CONF_HAS_LIGHT_TEMPERATURE, default=data.get(CONF_HAS_LIGHT_TEMPERATURE, True)): selector.BooleanSelector(),
+                vol.Optional(CONF_HAS_LIGHT_INTENSITY, default=data.get(CONF_HAS_LIGHT_INTENSITY, True)): selector.BooleanSelector(),
+            })
+        return vol.Schema(schema)
 
     if step == "helpers_broadlink":
         schema = {
-            vol.Required(CONF_BROADLINK_DEVICE_ID, default=data.get(CONF_BROADLINK_DEVICE_ID, "")): selector.TextSelector(),
-            vol.Optional(CONF_BROADLINK_ENTITY_ID, default=data.get(CONF_BROADLINK_ENTITY_ID, "")): selector.EntitySelector(
-                selector.EntitySelectorConfig(domain="remote"),
+            vol.Required(CONF_BROADLINK_DEVICE_ID, default=data.get(CONF_BROADLINK_DEVICE_ID, "")): selector.DeviceSelector(
+                selector.DeviceSelectorConfig(domain="remote"),
             ),
             vol.Required(CONF_REMOTE_DEVICE, default=data.get(CONF_REMOTE_DEVICE, data.get(CONF_PREFIX, ""))): selector.TextSelector(),
             vol.Required(CONF_COMMAND_ON, default=data.get(CONF_COMMAND_ON, DEFAULT_COMMAND_ON)): selector.TextSelector(),
             vol.Required(CONF_COMMAND_OFF, default=data.get(CONF_COMMAND_OFF, DEFAULT_COMMAND_OFF)): selector.TextSelector(),
-            vol.Optional(CONF_COMMAND_LUZ, default=data.get(CONF_COMMAND_LUZ, DEFAULT_COMMAND_LUZ)): selector.TextSelector(),
-            vol.Optional(CONF_COMMAND_LUZ_CALIDA, default=data.get(CONF_COMMAND_LUZ_CALIDA, DEFAULT_COMMAND_LUZ_CALIDA)): selector.TextSelector(),
-            vol.Optional(CONF_COMMAND_LUZ_FRIA, default=data.get(CONF_COMMAND_LUZ_FRIA, DEFAULT_COMMAND_LUZ_FRIA)): selector.TextSelector(),
-            vol.Optional(CONF_COMMAND_INTENSIDAD_ALTA, default=data.get(CONF_COMMAND_INTENSIDAD_ALTA, DEFAULT_COMMAND_INTENSIDAD_ALTA)): selector.TextSelector(),
-            vol.Optional(CONF_COMMAND_INTENSIDAD_BAJA, default=data.get(CONF_COMMAND_INTENSIDAD_BAJA, DEFAULT_COMMAND_INTENSIDAD_BAJA)): selector.TextSelector(),
         }
+        if data.get(CONF_HAS_LIGHT, True):
+            schema.update({
+                vol.Required(CONF_COMMAND_LUZ, default=data.get(CONF_COMMAND_LUZ, DEFAULT_COMMAND_LUZ)): selector.TextSelector(),
+            })
+            if data.get(CONF_HAS_LIGHT_TEMPERATURE, True):
+                schema.update({
+                    vol.Required(CONF_COMMAND_LUZ_CALIDA, default=data.get(CONF_COMMAND_LUZ_CALIDA, DEFAULT_COMMAND_LUZ_CALIDA)): selector.TextSelector(),
+                    vol.Required(CONF_COMMAND_LUZ_FRIA, default=data.get(CONF_COMMAND_LUZ_FRIA, DEFAULT_COMMAND_LUZ_FRIA)): selector.TextSelector(),
+                })
+            if data.get(CONF_HAS_LIGHT_INTENSITY, True):
+                schema.update({
+                    vol.Required(CONF_COMMAND_INTENSIDAD_ALTA, default=data.get(CONF_COMMAND_INTENSIDAD_ALTA, DEFAULT_COMMAND_INTENSIDAD_ALTA)): selector.TextSelector(),
+                    vol.Required(CONF_COMMAND_INTENSIDAD_BAJA, default=data.get(CONF_COMMAND_INTENSIDAD_BAJA, DEFAULT_COMMAND_INTENSIDAD_BAJA)): selector.TextSelector(),
+                })
         return vol.Schema(schema)
 
     if step == "helpers_commands_velocidad":
@@ -106,6 +133,15 @@ class FanpyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         if user_input is not None:
+            mode = user_input[CONF_MODE]
+            self._mode = mode
+            return await self.async_step_area()
+
+        schema = _build_schemas(step="user")
+        return self.async_show_form(step_id="user", data_schema=schema)
+
+    async def async_step_area(self, user_input=None):
+        if user_input is not None:
             area = user_input[CONF_AREA]
             name = area.upper()
             prefix = _slugify(f"ventilador_{area}")
@@ -117,24 +153,25 @@ class FanpyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 CONF_AREA: area,
                 CONF_NAME: name,
                 CONF_PREFIX: prefix,
+                CONF_MODE: self._mode,
             }
-            return await self.async_step_mode()
 
-        schema = _build_schemas(step="user")
-        return self.async_show_form(step_id="user", data_schema=schema)
+            if self._mode == CONF_MODE_DIRECT:
+                return await self.async_step_direct_entity()
+            return await self.async_step_helpers_speeds()
 
-    async def async_step_mode(self, user_input=None):
+        schema = _build_schemas(self._data if hasattr(self, '_data') else {}, step="area")
+        return self.async_show_form(step_id="area", data_schema=schema)
+
+    async def async_step_direct_entity(self, user_input=None):
         if user_input is not None:
-            mode = user_input[CONF_MODE]
-            self._data[CONF_MODE] = mode
-            if mode == CONF_MODE_DIRECT:
-                return await self.async_step_direct()
-            return await self.async_step_helpers_features()
+            self._data.update(user_input)
+            return await self.async_step_direct_light()
 
-        schema = _build_schemas(self._data, step="mode")
-        return self.async_show_form(step_id="mode", data_schema=schema)
+        schema = _build_schemas(self._data, step="direct_entity")
+        return self.async_show_form(step_id="direct_entity", data_schema=schema)
 
-    async def async_step_direct(self, user_input=None):
+    async def async_step_direct_light(self, user_input=None):
         if user_input is not None:
             self._data.update(user_input)
             return self.async_create_entry(
@@ -142,16 +179,24 @@ class FanpyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 data=self._data,
             )
 
-        schema = _build_schemas(self._data, step="direct")
-        return self.async_show_form(step_id="direct", data_schema=schema)
+        schema = _build_schemas(self._data, step="direct_light")
+        return self.async_show_form(step_id="direct_light", data_schema=schema)
 
-    async def async_step_helpers_features(self, user_input=None):
+    async def async_step_helpers_speeds(self, user_input=None):
+        if user_input is not None:
+            self._data.update(user_input)
+            return await self.async_step_helpers_light()
+
+        schema = _build_schemas(self._data, step="helpers_speeds")
+        return self.async_show_form(step_id="helpers_speeds", data_schema=schema)
+
+    async def async_step_helpers_light(self, user_input=None):
         if user_input is not None:
             self._data.update(user_input)
             return await self.async_step_helpers_broadlink()
 
-        schema = _build_schemas(self._data, step="helpers_features")
-        return self.async_show_form(step_id="helpers_features", data_schema=schema)
+        schema = _build_schemas(self._data, step="helpers_light")
+        return self.async_show_form(step_id="helpers_light", data_schema=schema)
 
     async def async_step_helpers_broadlink(self, user_input=None):
         if user_input is not None:
@@ -176,7 +221,7 @@ class FanpyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
-        return FanCustomCardOptionsFlow(config_entry)
+        return FanpyOptionsFlow(config_entry)
 
 
 class FanpyOptionsFlow(config_entries.OptionsFlow):

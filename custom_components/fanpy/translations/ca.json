@@ -2,89 +2,100 @@
   "config": {
     "step": {
       "user": {
-        "title": "Fan Custom Card â€” Ã€rea",
-        "description": "Selecciona l'Ã rea on estÃ  el ventilador. El nom i prefix es generaran automÃ ticament.",
-        "data": {
-          "area": "Ã€rea"
-        }
-      },
-      "mode": {
-        "title": "Fan Custom Card â€” Mode",
+        "title": "Fanpy — Mode",
         "description": "Tria com es controla aquest ventilador.",
         "data": {
           "mode": "Mode de control"
         }
       },
-      "direct": {
-        "title": "Fan Custom Card â€” Mode Directe",
-        "description": "Selecciona les entitats switch i light per a aquest ventilador.",
+      "area": {
+        "title": "Fanpy — \u00c0rea",
+        "description": "Selecciona l'\u00e0rea on est\u00e0 el ventilador. El nom i prefix es generaran autom\u00e0ticament. Si l'\u00e0rea no existeix, crea-la a Configuraci\u00f3 > \u00c0rees i reinicia l'assistent.",
+        "data": {
+          "area": "\u00c0rea"
+        }
+      },
+      "direct_entity": {
+        "title": "Fanpy — Ventilador i Velocitats",
+        "description": "Selecciona l'entitat switch que controla aquest ventilador i estableix el nombre de velocitats.",
         "data": {
           "entity_fan": "Entitat ventilador (switch.*)",
-          "entity_light": "Entitat llum (light.*)",
-          "has_light": "TÃ© llum",
+          "num_speeds": "Nombre de velocitats"
+        }
+      },
+      "direct_light": {
+        "title": "Fanpy — Llum",
+        "description": "Configura les capacitats de la llum del ventilador.",
+        "data": {
+          "has_light": "T\u00e9 llum",
           "has_light_temperature": "Control de temperatura de color",
           "has_light_intensity": "Control d'intensitat"
         }
       },
-      "helpers_features": {
-        "title": "Fan Custom Card â€” CaracterÃ­stiques",
-        "description": "Configura les capacitats del ventilador.",
+      "helpers_speeds": {
+        "title": "Fanpy — Velocitats",
+        "description": "Estableix el nombre de velocitats d'aquest ventilador.",
         "data": {
-          "num_speeds": "Nombre de velocitats (1-6)",
-          "has_light": "TÃ© llum",
+          "num_speeds": "Nombre de velocitats"
+        }
+      },
+      "helpers_light": {
+        "title": "Fanpy — Llum",
+        "description": "Configura les capacitats de la llum del ventilador.",
+        "data": {
+          "has_light": "T\u00e9 llum",
           "has_light_temperature": "Control de temperatura de color",
           "has_light_intensity": "Control d'intensitat"
         }
       },
       "helpers_broadlink": {
-        "title": "Fan Custom Card â€” Broadlink i Comandes",
-        "description": "Configura el dispositiu Broadlink i els noms de les comandes apreses.",
+        "title": "Fanpy — Broadlink i Comandes",
+        "description": "Selecciona el dispositiu Broadlink i configura les comandes apreses amb remote.learn_command. Utilitza el mateix dispositiu i noms de comanda que vas usar en aprendre cada senyal RF.",
         "data": {
-          "broadlink_device_id": "ID del dispositiu Broadlink",
-          "broadlink_entity_id": "Entitat remote de Broadlink",
+          "broadlink_device_id": "Dispositiu Broadlink",
           "remote_device": "Nom del dispositiu remot",
           "command_on": "Comanda encendre",
           "command_off": "Comanda apagar",
           "command_luz": "Comanda llum",
-          "command_luz_calida": "Comanda llum cÃ lida",
+          "command_luz_calida": "Comanda llum c\u00e0lida",
           "command_luz_fria": "Comanda llum freda",
           "command_intensidad_alta": "Comanda pujar intensitat",
           "command_intensidad_baja": "Comanda baixar intensitat"
         }
       },
       "helpers_commands_velocidad": {
-        "title": "Fan Custom Card â€” Comandes de Velocitat",
-        "description": "Configura els noms de les comandes per a cada velocitat.",
+        "title": "Fanpy — Comandes de Velocitat",
+        "description": "Configura els noms de les comandes per a cada velocitat, coincidint amb les usades a remote.learn_command.",
         "data": {
           "command_velocidad_1": "Comanda velocitat 1",
           "command_velocidad_2": "Comanda velocitat 2",
           "command_velocidad_3": "Comanda velocitat 3",
           "command_velocidad_4": "Comanda velocitat 4",
           "command_velocidad_5": "Comanda velocitat 5",
-          "command_velocidad_6": "Comanda velocitat 6"
+          "command_velocidad_6": "Comanda velocitat 6",
+          "command_velocidad_7": "Comanda velocitat 7",
+          "command_velocidad_8": "Comanda velocitat 8",
+          "command_velocidad_9": "Comanda velocitat 9",
+          "command_velocidad_10": "Comanda velocitat 10"
         }
-      },
-      "helpers_summary": {
-        "title": "Fan Custom Card â€” Resum",
-        "description": "Tots els fitxers han estat generats. Revisa els detalls a continuaciÃ³."
       }
     },
     "error": {
       "unknown": "Error inesperat",
-      "invalid_area": "Selecciona una Ã rea vÃ lida",
-      "invalid_entity": "Selecciona una entitat vÃ lida",
-      "invalid_speeds": "El nombre de velocitats ha d'estar entre 1 i 6"
+      "invalid_area": "Selecciona una \u00e0rea v\u00e0lida",
+      "invalid_entity": "Selecciona una entitat v\u00e0lida",
+      "invalid_speeds": "El nombre de velocitats ha d'estar entre 1 i 10"
     },
     "abort": {
-      "already_configured": "Aquesta Ã rea ja estÃ  configurada"
+      "already_configured": "Aquesta \u00e0rea ja est\u00e0 configurada"
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Fan Custom Card â€” Opcions",
+        "title": "Fanpy — Opcions",
         "data": {
-          "has_light": "TÃ© llum",
+          "has_light": "T\u00e9 llum",
           "has_light_temperature": "Control de temperatura de color",
           "has_light_intensity": "Control d'intensitat"
         }

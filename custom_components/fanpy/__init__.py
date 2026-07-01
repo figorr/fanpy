@@ -43,6 +43,9 @@ async def _generate_helpers_yaml(hass: HomeAssistant, entry: ConfigEntry) -> Non
     has_temp = data.get(CONF_HAS_LIGHT_TEMPERATURE, True)
     has_intensity = data.get(CONF_HAS_LIGHT_INTENSITY, True)
 
+    if num_speeds <= 1:
+        num_speeds = 0
+
     broadlink_device_id = data.get(CONF_BROADLINK_DEVICE_ID, "YOUR_BROADLINK_DEVICE_ID")
     broadlink_entity_id = data.get(CONF_BROADLINK_ENTITY_ID, "")
     remote_device = data.get(CONF_REMOTE_DEVICE, prefix)
@@ -114,6 +117,16 @@ def _build_entities_yaml(prefix: str, name: str, num_speeds: int, has_light: boo
     lines.append("    icon: mdi:fan-speed")
     lines.append("")
 
+    if num_speeds > 1:
+        lines.append("# === input_select ===")
+        lines.append("input_select:")
+        lines.append(f"  {prefix}_velocidad:")
+        lines.append(f'    name: "{name} Velocidad"')
+        options = [str(i) for i in range(1, num_speeds + 1)]
+        lines.append(f"    options: {options}")
+        lines.append("    icon: mdi:fan-speed")
+        lines.append("")
+
     lines.append("# === input_button (optional, for manual testing) ===")
     lines.append("input_button:")
     lines.append(f"  {prefix}_power_on:")
@@ -135,9 +148,10 @@ def _build_entities_yaml(prefix: str, name: str, num_speeds: int, has_light: boo
             lines.append(f'    name: "{name} Intensidad Alta"')
             lines.append(f"  {prefix}_intensidad_baja:")
             lines.append(f'    name: "{name} Intensidad Baja"')
-    for i in range(1, num_speeds + 1):
-        lines.append(f"  {prefix}_velocidad_{i}:")
-        lines.append(f'    name: "{name} Velocidad {i}"')
+    if num_speeds > 1:
+        for i in range(1, num_speeds + 1):
+            lines.append(f"  {prefix}_velocidad_{i}:")
+            lines.append(f'    name: "{name} Velocidad {i}"')
     lines.append("")
 
     lines.append("# === template binary_sensor (for card more-info) ===")
@@ -228,10 +242,11 @@ def _build_scripts_yaml(
             _write_script("intensidad_alta", f"{name} Intensidad Alta", cmd_int_alta)
             _write_script("intensidad_baja", f"{name} Intensidad Baja", cmd_int_baja)
 
-    for i in range(1, num_speeds + 1):
-        cmd = velocidad_commands.get(i, f"velocidad{i}")
-        _write_script(f"velocidad_{i}", f"{name} Velocidad {i}", cmd,
-                      ("input_select.select_option", f"input_select.{prefix}_velocidad"),
-                      ("input_boolean.turn_on", f"input_boolean.{prefix}_power"))
+    if num_speeds > 1:
+        for i in range(1, num_speeds + 1):
+            cmd = velocidad_commands.get(i, f"velocidad{i}")
+            _write_script(f"velocidad_{i}", f"{name} Velocidad {i}", cmd,
+                          ("input_select.select_option", f"input_select.{prefix}_velocidad"),
+                          ("input_boolean.turn_on", f"input_boolean.{prefix}_power"))
 
     return "\n".join(lines)
