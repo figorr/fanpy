@@ -41,12 +41,21 @@ Fanpy is the **backend companion** for the Fan Custom Card. While the card provi
 1. After restart, go to **Settings > Devices & Services > Add Integration**.
 2. Search for **Fanpy** and select it.
 3. Follow the wizard steps:
-   - **Step 1**: Select the area where the fan is located
-   - **Step 2**: Choose mode (Helpers or Direct)
-   - **Step 3 (Direct)**: Select switch and light entities
-   - **Step 3 (Helpers)**: Configure features (speeds, light, temperature, intensity)
-   - **Step 4 (Helpers)**: Configure Broadlink device and command names
-   - **Step 5 (Helpers)**: Configure speed command names
+
+   **All modes:**
+   - **Step 1 — Mode**: Choose Helpers (Broadlink RF) or Direct (switch.* / light.*)
+   - **Step 2 — Area**: Select the area where the fan is located
+
+   **Direct mode:**
+   - **Step 3 — Fan & Speeds**: Select the fan entity (`switch.*`) and set the number of speeds (1-10; set to 1 to hide speed buttons)
+   - **Step 4 — Light**: Toggle light, color temperature, and brightness controls
+
+   **Helpers mode:**
+   - **Step 3 — Speeds**: Set the number of speeds (1-10; set to 1 to hide speed buttons)
+   - **Step 4 — Light**: Toggle light, color temperature, and brightness controls
+   - **Step 5 — Broadlink**: Select the Broadlink device, set the remote device name, and configure each learned RF command name
+   - **Step 6 — Speed Commands**: Configure the RF command name for each speed level
+
 4. The integration creates the entities and saves generated YAML files.
 
 ### Generated Files
