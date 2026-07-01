@@ -1,0 +1,94 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Fan Custom Card â€” Ã€rea",
+        "description": "Selecciona l'Ã rea on estÃ  el ventilador. El nom i prefix es generaran automÃ ticament.",
+        "data": {
+          "area": "Ã€rea"
+        }
+      },
+      "mode": {
+        "title": "Fan Custom Card â€” Mode",
+        "description": "Tria com es controla aquest ventilador.",
+        "data": {
+          "mode": "Mode de control"
+        }
+      },
+      "direct": {
+        "title": "Fan Custom Card â€” Mode Directe",
+        "description": "Selecciona les entitats switch i light per a aquest ventilador.",
+        "data": {
+          "entity_fan": "Entitat ventilador (switch.*)",
+          "entity_light": "Entitat llum (light.*)",
+          "has_light": "TÃ© llum",
+          "has_light_temperature": "Control de temperatura de color",
+          "has_light_intensity": "Control d'intensitat"
+        }
+      },
+      "helpers_features": {
+        "title": "Fan Custom Card â€” CaracterÃ­stiques",
+        "description": "Configura les capacitats del ventilador.",
+        "data": {
+          "num_speeds": "Nombre de velocitats (1-6)",
+          "has_light": "TÃ© llum",
+          "has_light_temperature": "Control de temperatura de color",
+          "has_light_intensity": "Control d'intensitat"
+        }
+      },
+      "helpers_broadlink": {
+        "title": "Fan Custom Card â€” Broadlink i Comandes",
+        "description": "Configura el dispositiu Broadlink i els noms de les comandes apreses.",
+        "data": {
+          "broadlink_device_id": "ID del dispositiu Broadlink",
+          "broadlink_entity_id": "Entitat remote de Broadlink",
+          "remote_device": "Nom del dispositiu remot",
+          "command_on": "Comanda encendre",
+          "command_off": "Comanda apagar",
+          "command_luz": "Comanda llum",
+          "command_luz_calida": "Comanda llum cÃ lida",
+          "command_luz_fria": "Comanda llum freda",
+          "command_intensidad_alta": "Comanda pujar intensitat",
+          "command_intensidad_baja": "Comanda baixar intensitat"
+        }
+      },
+      "helpers_commands_velocidad": {
+        "title": "Fan Custom Card â€” Comandes de Velocitat",
+        "description": "Configura els noms de les comandes per a cada velocitat.",
+        "data": {
+          "command_velocidad_1": "Comanda velocitat 1",
+          "command_velocidad_2": "Comanda velocitat 2",
+          "command_velocidad_3": "Comanda velocitat 3",
+          "command_velocidad_4": "Comanda velocitat 4",
+          "command_velocidad_5": "Comanda velocitat 5",
+          "command_velocidad_6": "Comanda velocitat 6"
+        }
+      },
+      "helpers_summary": {
+        "title": "Fan Custom Card â€” Resum",
+        "description": "Tots els fitxers han estat generats. Revisa els detalls a continuaciÃ³."
+      }
+    },
+    "error": {
+      "unknown": "Error inesperat",
+      "invalid_area": "Selecciona una Ã rea vÃ lida",
+      "invalid_entity": "Selecciona una entitat vÃ lida",
+      "invalid_speeds": "El nombre de velocitats ha d'estar entre 1 i 6"
+    },
+    "abort": {
+      "already_configured": "Aquesta Ã rea ja estÃ  configurada"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Fan Custom Card â€” Opcions",
+        "data": {
+          "has_light": "TÃ© llum",
+          "has_light_temperature": "Control de temperatura de color",
+          "has_light_intensity": "Control d'intensitat"
+        }
+      }
+    }
+  }
+}
