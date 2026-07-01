@@ -1,0 +1,90 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Fanpy — Area",
+        "description": "Select the area where the fan is located. The name and prefix will be auto-generated.",
+        "data": {
+          "area": "Area"
+        }
+      },
+      "mode": {
+        "title": "Fanpy — Mode",
+        "description": "Choose how this fan is controlled.",
+        "data": {
+          "mode": "Control mode"
+        }
+      },
+      "direct": {
+        "title": "Fanpy — Direct Mode",
+        "description": "Select the switch and light entities for this fan.",
+        "data": {
+          "entity_fan": "Fan entity (switch.*)",
+          "entity_light": "Light entity (light.*)",
+          "has_light": "Has light",
+          "has_light_temperature": "Color temperature control",
+          "has_light_intensity": "Brightness control"
+        }
+      },
+      "helpers_features": {
+        "title": "Fanpy — Features",
+        "description": "Configure the fan capabilities.",
+        "data": {
+          "num_speeds": "Number of speeds (1-6)",
+          "has_light": "Has light",
+          "has_light_temperature": "Color temperature control",
+          "has_light_intensity": "Brightness control"
+        }
+      },
+      "helpers_broadlink": {
+        "title": "Fanpy — Broadlink & Commands",
+        "description": "Configure the Broadlink device and the learned command names.",
+        "data": {
+          "broadlink_device_id": "Broadlink device ID",
+          "broadlink_entity_id": "Broadlink remote entity",
+          "remote_device": "Remote device name",
+          "command_on": "Power ON command",
+          "command_off": "Power OFF command",
+          "command_luz": "Light toggle command",
+          "command_luz_calida": "Warm light command",
+          "command_luz_fria": "Cold light command",
+          "command_intensidad_alta": "Brightness up command",
+          "command_intensidad_baja": "Brightness down command"
+        }
+      },
+      "helpers_commands_velocidad": {
+        "title": "Fanpy — Speed Commands",
+        "description": "Configure the command names for each speed level.",
+        "data": {
+          "command_velocidad_1": "Speed 1 command",
+          "command_velocidad_2": "Speed 2 command",
+          "command_velocidad_3": "Speed 3 command",
+          "command_velocidad_4": "Speed 4 command",
+          "command_velocidad_5": "Speed 5 command",
+          "command_velocidad_6": "Speed 6 command"
+        }
+      }
+    },
+    "error": {
+      "unknown": "Unexpected error",
+      "invalid_area": "Please select a valid area",
+      "invalid_entity": "Please select a valid entity",
+      "invalid_speeds": "Number of speeds must be between 1 and 6"
+    },
+    "abort": {
+      "already_configured": "This area is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Fanpy — Options",
+        "data": {
+          "has_light": "Has light",
+          "has_light_temperature": "Color temperature control",
+          "has_light_intensity": "Brightness control"
+        }
+      }
+    }
+  }
+}
