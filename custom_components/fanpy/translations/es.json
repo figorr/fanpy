@@ -12,7 +12,8 @@
         "title": "Fanpy — \u00c1rea",
         "description": "Selecciona el \u00e1rea donde est\u00e1 el ventilador. El nombre y prefijo se generar\u00e1n autom\u00e1ticamente. Si el \u00e1rea no existe, cr\u00e9ala en Configuraci\u00f3n > \u00c1reas y reinicia el asistente.",
         "data": {
-          "area": "\u00c1rea"
+          "area": "\u00c1rea",
+          "fan_number": "N\u00famero de ventilador (1 = primer ventilador, 2 = segundo, ...)"
         }
       },
       "direct_entity": {
@@ -25,9 +26,22 @@
       },
       "direct_light": {
         "title": "Fanpy — Luz",
+        "description": "Este ventilador tiene luz?",
+        "data": {
+          "has_light": "Tiene luz"
+        }
+      },
+      "direct_light_entity": {
+        "title": "Fanpy — Entidad de Luz",
+        "description": "Selecciona la entidad light que controla la luz del ventilador.",
+        "data": {
+          "entity_light": "Entidad luz (light.*)"
+        }
+      },
+      "direct_light_features": {
+        "title": "Fanpy — Funciones de Luz",
         "description": "Configura las capacidades de la luz del ventilador.",
         "data": {
-          "has_light": "Tiene luz",
           "has_light_temperature": "Control de temperatura de color",
           "has_light_intensity": "Control de intensidad"
         }
@@ -41,9 +55,15 @@
       },
       "helpers_light": {
         "title": "Fanpy — Luz",
+        "description": "Este ventilador tiene luz?",
+        "data": {
+          "has_light": "Tiene luz"
+        }
+      },
+      "helpers_light_features": {
+        "title": "Fanpy — Funciones de Luz",
         "description": "Configura las capacidades de la luz del ventilador.",
         "data": {
-          "has_light": "Tiene luz",
           "has_light_temperature": "Control de temperatura de color",
           "has_light_intensity": "Control de intensidad"
         }
@@ -60,13 +80,7 @@
           "command_luz_calida": "Comando luz c\u00e1lida",
           "command_luz_fria": "Comando luz fr\u00eda",
           "command_intensidad_alta": "Comando subir intensidad",
-          "command_intensidad_baja": "Comando bajar intensidad"
-        }
-      },
-      "helpers_commands_velocidad": {
-        "title": "Fanpy — Comandos de Velocidad",
-        "description": "Configura los nombres de los comandos para cada velocidad, coincidiendo con los usados en remote.learn_command.",
-        "data": {
+          "command_intensidad_baja": "Comando bajar intensidad",
           "command_velocidad_1": "Comando velocidad 1",
           "command_velocidad_2": "Comando velocidad 2",
           "command_velocidad_3": "Comando velocidad 3",

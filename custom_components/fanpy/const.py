@@ -5,8 +5,9 @@ CONF_NAME = "name"
 CONF_PREFIX = "prefix"
 CONF_AREA = "area"
 
-CONF_MODE_HELPERS = "helpers"
+CONF_MODE_REMOTE = "remote"
 CONF_MODE_DIRECT = "direct"
+CONF_ENTITY_PREFIX = "fanpy"
 
 CONF_ENTITY_FAN = "entity_fan"
 CONF_ENTITY_LIGHT = "entity_light"
@@ -15,6 +16,8 @@ CONF_HAS_LIGHT = "has_light"
 CONF_HAS_LIGHT_TEMPERATURE = "has_light_temperature"
 CONF_HAS_LIGHT_INTENSITY = "has_light_intensity"
 CONF_NUM_SPEEDS = "num_speeds"
+
+CONF_FAN_NUMBER = "fan_number"
 
 CONF_BROADLINK_DEVICE_ID = "broadlink_device_id"
 CONF_BROADLINK_ENTITY_ID = "broadlink_entity_id"

@@ -2,7 +2,7 @@ import logging
 import os
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_NAME, CONF_MODE
+from homeassistant.const import CONF_MODE
 from homeassistant.core import HomeAssistant
 
 from .const import *
@@ -11,7 +11,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = "fanpy"
 
-PLATFORMS = ["binary_sensor", "button"]
+PLATFORMS = ["binary_sensor", "button", "switch", "select"]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -20,9 +20,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
-    mode = entry.data.get(CONF_MODE, CONF_MODE_HELPERS)
-    if mode == CONF_MODE_HELPERS:
-        await _generate_helpers_yaml(hass, entry)
+    mode = entry.data.get(CONF_MODE, CONF_MODE_REMOTE)
+    if mode == CONF_MODE_REMOTE:
+        await _generate_scripts_yaml(hass, entry)
 
     return True
 
@@ -34,14 +34,14 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unload_ok
 
 
-async def _generate_helpers_yaml(hass: HomeAssistant, entry: ConfigEntry) -> None:
+async def _generate_scripts_yaml(hass: HomeAssistant, entry: ConfigEntry) -> None:
     data = entry.data
     prefix = data.get(CONF_PREFIX, "ventilador")
     name = data.get(CONF_NAME, prefix)
     num_speeds = data.get(CONF_NUM_SPEEDS, 6)
-    has_light = data.get(CONF_HAS_LIGHT, True)
-    has_temp = data.get(CONF_HAS_LIGHT_TEMPERATURE, True)
-    has_intensity = data.get(CONF_HAS_LIGHT_INTENSITY, True)
+    has_light = data.get(CONF_HAS_LIGHT, False)
+    has_temp = data.get(CONF_HAS_LIGHT_TEMPERATURE, False)
+    has_intensity = data.get(CONF_HAS_LIGHT_INTENSITY, False)
 
     if num_speeds <= 1:
         num_speeds = 0
@@ -63,110 +63,26 @@ async def _generate_helpers_yaml(hass: HomeAssistant, entry: ConfigEntry) -> Non
         key = f"{CONF_COMMAND_VELOCIDAD_PREFIX}_{i}"
         velocidad_commands[i] = data.get(key, f"{DEFAULT_COMMAND_VELOCIDAD_PREFIX}{i}")
 
-    output_dir = hass.config.path("fanpy", "generated")
+    integration_dir = os.path.dirname(__file__)
+    output_dir = os.path.join(integration_dir, "generated")
     os.makedirs(output_dir, exist_ok=True)
 
-    entities_yaml = _build_entities_yaml(prefix, name, num_speeds, has_light, has_temp, has_intensity)
-    scripts_yaml = _build_scripts_yaml(
+    yaml_content = _build_scripts_yaml(
         prefix, name, num_speeds, has_light, has_temp, has_intensity,
         broadlink_device_id, broadlink_entity_id, remote_device,
         cmd_on, cmd_off, cmd_luz, cmd_luz_calida, cmd_luz_fria,
         cmd_int_alta, cmd_int_baja, velocidad_commands,
     )
 
-    entities_path = os.path.join(output_dir, "entities.yaml")
     scripts_path = os.path.join(output_dir, "scripts.yaml")
 
     def _write():
-        with open(entities_path, "w", encoding="utf-8") as f:
-            f.write(entities_yaml)
         with open(scripts_path, "w", encoding="utf-8") as f:
-            f.write(scripts_yaml)
+            f.write(yaml_content)
 
     await hass.async_add_executor_job(_write)
 
-    _LOGGER.info("Fanpy: generated files for '%s' at %s", name, output_dir)
-
-
-def _build_entities_yaml(prefix: str, name: str, num_speeds: int, has_light: bool, has_temp: bool, has_intensity: bool) -> str:
-    lines = []
-    lines.append("# Fanpy â€” Generated Helper Entities")
-    lines.append(f"# Prefix: {prefix}")
-    lines.append(f"# Name: {name}")
-    lines.append("#")
-    lines.append("# Copy the blocks below into your configuration.yaml")
-    lines.append("#")
-
-    lines.append("")
-    lines.append("# === input_boolean ===")
-    lines.append("input_boolean:")
-    lines.append(f"  {prefix}_power:")
-    lines.append(f'    name: "{name} Power"')
-    lines.append("    icon: mdi:fan")
-    lines.append(f"  {prefix}_luz:")
-    lines.append(f'    name: "{name} Luz"')
-    lines.append("    icon: mdi:lightbulb")
-    lines.append("")
-
-    lines.append("# === input_select ===")
-    lines.append("input_select:")
-    lines.append(f"  {prefix}_velocidad:")
-    lines.append(f'    name: "{name} Velocidad"')
-    options = [str(i) for i in range(1, num_speeds + 1)]
-    lines.append(f"    options: {options}")
-    lines.append("    icon: mdi:fan-speed")
-    lines.append("")
-
-    if num_speeds > 1:
-        lines.append("# === input_select ===")
-        lines.append("input_select:")
-        lines.append(f"  {prefix}_velocidad:")
-        lines.append(f'    name: "{name} Velocidad"')
-        options = [str(i) for i in range(1, num_speeds + 1)]
-        lines.append(f"    options: {options}")
-        lines.append("    icon: mdi:fan-speed")
-        lines.append("")
-
-    lines.append("# === input_button (optional, for manual testing) ===")
-    lines.append("input_button:")
-    lines.append(f"  {prefix}_power_on:")
-    lines.append(f'    name: "{name} Power On"')
-    lines.append(f"  {prefix}_power_off:")
-    lines.append(f'    name: "{name} Power Off"')
-    if has_light:
-        lines.append(f"  {prefix}_luz_on:")
-        lines.append(f'    name: "{name} Luz On"')
-        lines.append(f"  {prefix}_luz_off:")
-        lines.append(f'    name: "{name} Luz Off"')
-        if has_temp:
-            lines.append(f"  {prefix}_luz_calida:")
-            lines.append(f'    name: "{name} Luz CÃ¡lida"')
-            lines.append(f"  {prefix}_luz_fria:")
-            lines.append(f'    name: "{name} Luz FrÃ­a"')
-        if has_intensity:
-            lines.append(f"  {prefix}_intensidad_alta:")
-            lines.append(f'    name: "{name} Intensidad Alta"')
-            lines.append(f"  {prefix}_intensidad_baja:")
-            lines.append(f'    name: "{name} Intensidad Baja"')
-    if num_speeds > 1:
-        for i in range(1, num_speeds + 1):
-            lines.append(f"  {prefix}_velocidad_{i}:")
-            lines.append(f'    name: "{name} Velocidad {i}"')
-    lines.append("")
-
-    lines.append("# === template binary_sensor (for card more-info) ===")
-    lines.append("# Note: if you already have template: in your config, merge this block")
-    lines.append("template:")
-    lines.append("  - binary_sensor:")
-    lines.append(f"      - name: \"{name} Power\"")
-    lines.append(f"        state: \"{{{{ states('input_boolean.{prefix}_power') }}}}\"")
-    lines.append("        icon: mdi:fan")
-    lines.append(f"      - name: \"{name} Luz\"")
-    lines.append(f"        state: \"{{{{ states('input_boolean.{prefix}_luz') }}}}\"")
-    lines.append("        icon: mdi:lightbulb")
-    lines.append("")
-
-    return "\n".join(lines)
+    _LOGGER.info("Fanpy: generated scripts for '%s' at %s", name, scripts_path)
 
 
 def _build_scripts_yaml(
@@ -179,7 +95,7 @@ def _build_scripts_yaml(
     velocidad_commands: dict,
 ) -> str:
     lines = []
-    lines.append("# Fanpy â€” Generated Scripts")
+    lines.append("# Fanpy — Generated Scripts")
     lines.append(f"# Prefix: {prefix}")
     lines.append(f"# Name: {name}")
     lines.append(f"# Device ID: {broadlink_device_id}")
@@ -191,13 +107,13 @@ def _build_scripts_yaml(
     lines.append("script:")
 
     def _target_block():
-        if broadlink_device_id and broadlink_device_id != "YOUR_BROADLINK_DEVICE_ID":
-            return f"        device_id: {broadlink_device_id}"
         if broadlink_entity_id:
             return f"        entity_id: {broadlink_entity_id}"
-        return "        device_id: YOUR_BROADLINK_DEVICE_ID"
+        if broadlink_device_id and broadlink_device_id != "YOUR_BROADLINK_DEVICE_ID":
+            return f"        entity_id: {broadlink_device_id}"
+        return "        entity_id: YOUR_BROADLINK_ENTITY_ID"
 
-    def _write_script(action_name, display_name, *args):
+    def _write_script(action_name, display_name, command):
         lines.append(f"  {prefix}_{action_name}:")
         lines.append("    sequence:")
         lines.append("    - action: remote.send_command")
@@ -207,36 +123,23 @@ def _build_scripts_yaml(
         lines.append("        delay_secs: 0.4")
         lines.append("        hold_secs: 0")
         lines.append(f"        device: {remote_device}")
-        if args:
-            lines.append(f"        command: '{args[0]}'")
+        lines.append(f"        command: '{command}'")
         lines.append("      target:")
         lines.append(_target_block())
-        for extra in args[1:]:
-            lines.append(f"    - action: {extra[0]}")
-            lines.append("      metadata: {}")
-            lines.append("      data: {}")
-            lines.append("      target:")
-            lines.append(f"        entity_id: {extra[1]}")
         lines.append(f"    alias: \"{display_name}\"")
         lines.append("    description: ''")
         lines.append("")
 
-    _write_script("power_on", f"{name} Power ON", cmd_on,
-                  ("input_boolean.turn_on", f"input_boolean.{prefix}_power"))
-
-    _write_script("power_off", f"{name} Power OFF", cmd_off,
-                  ("input_boolean.turn_off", f"input_boolean.{prefix}_power"))
+    _write_script("power_on", f"{name} Power ON", cmd_on)
+    _write_script("power_off", f"{name} Power OFF", cmd_off)
 
     if has_light:
-        _write_script("luz_on", f"{name} Luz ON", cmd_luz,
-                      ("input_boolean.turn_on", f"input_boolean.{prefix}_luz"))
-
-        _write_script("luz_off", f"{name} Luz OFF", cmd_luz,
-                      ("input_boolean.turn_off", f"input_boolean.{prefix}_luz"))
+        _write_script("luz_on", f"{name} Luz ON", cmd_luz)
+        _write_script("luz_off", f"{name} Luz OFF", cmd_luz)
 
         if has_temp:
-            _write_script("luz_calida", f"{name} Luz CÃ¡lida", cmd_luz_calida)
-            _write_script("luz_fria", f"{name} Luz FrÃ­a", cmd_luz_fria)
+            _write_script("luz_calida", f"{name} Luz Cálida", cmd_luz_calida)
+            _write_script("luz_fria", f"{name} Luz Fría", cmd_luz_fria)
 
         if has_intensity:
             _write_script("intensidad_alta", f"{name} Intensidad Alta", cmd_int_alta)
@@ -245,8 +148,6 @@ def _build_scripts_yaml(
     if num_speeds > 1:
         for i in range(1, num_speeds + 1):
             cmd = velocidad_commands.get(i, f"velocidad{i}")
-            _write_script(f"velocidad_{i}", f"{name} Velocidad {i}", cmd,
-                          ("input_select.select_option", f"input_select.{prefix}_velocidad"),
-                          ("input_boolean.turn_on", f"input_boolean.{prefix}_power"))
+            _write_script(f"velocidad_{i}", f"{name} Velocidad {i}", cmd)
 
     return "\n".join(lines)

@@ -16,6 +16,10 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
+    mode = entry.data.get(CONF_MODE, CONF_MODE_REMOTE)
+    if mode == CONF_MODE_DIRECT:
+        return
+
     prefix = entry.data.get(CONF_PREFIX, "ventilador")
     name = entry.data.get(CONF_NAME, prefix)
 
@@ -34,12 +38,12 @@ class FanPowerBinarySensor(BinarySensorEntity):
         self._hass = hass
         self._entry = entry
         self._prefix = prefix
-        self._attr_name = f"{name} Power"
-        self._attr_unique_id = f"{prefix}_power"
+        self._attr_name = f"Fanpy {name} Power"
+        self._attr_unique_id = f"{CONF_ENTITY_PREFIX}_{prefix}_power"
 
     @property
     def is_on(self) -> bool | None:
-        state = self._hass.states.get(f"input_boolean.{self._prefix}_power")
+        state = self._hass.states.get(f"switch.{CONF_ENTITY_PREFIX}_{self._prefix}_power")
         if state is None:
             return None
         return state.state == STATE_ON
@@ -54,12 +58,12 @@ class FanLightBinarySensor(BinarySensorEntity):
         self._hass = hass
         self._entry = entry
         self._prefix = prefix
-        self._attr_name = f"{name} Luz"
-        self._attr_unique_id = f"{prefix}_luz"
+        self._attr_name = f"Fanpy {name} Luz"
+        self._attr_unique_id = f"{CONF_ENTITY_PREFIX}_{prefix}_luz"
 
     @property
     def is_on(self) -> bool | None:
-        state = self._hass.states.get(f"input_boolean.{self._prefix}_luz")
+        state = self._hass.states.get(f"switch.{CONF_ENTITY_PREFIX}_{self._prefix}_luz")
         if state is None:
             return None
         return state.state == STATE_ON

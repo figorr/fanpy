@@ -12,7 +12,8 @@
         "title": "Fanpy — Area",
         "description": "Select the area where the fan is located. The name and prefix will be auto-generated. If the area doesn't exist, create it in Settings > Areas and restart the wizard.",
         "data": {
-          "area": "Area"
+          "area": "Area",
+          "fan_number": "Fan number (1 = first fan in this area, 2 = second, ...)"
         }
       },
       "direct_entity": {
@@ -25,9 +26,22 @@
       },
       "direct_light": {
         "title": "Fanpy — Light",
+        "description": "Does this fan have a light?",
+        "data": {
+          "has_light": "Has light"
+        }
+      },
+      "direct_light_entity": {
+        "title": "Fanpy — Light Entity",
+        "description": "Select the light entity that controls this fan's light.",
+        "data": {
+          "entity_light": "Light entity (light.*)"
+        }
+      },
+      "direct_light_features": {
+        "title": "Fanpy — Light Features",
         "description": "Configure the fan light capabilities.",
         "data": {
-          "has_light": "Has light",
           "has_light_temperature": "Color temperature control",
           "has_light_intensity": "Brightness control"
         }
@@ -41,9 +55,15 @@
       },
       "helpers_light": {
         "title": "Fanpy — Light",
+        "description": "Does this fan have a light?",
+        "data": {
+          "has_light": "Has light"
+        }
+      },
+      "helpers_light_features": {
+        "title": "Fanpy — Light Features",
         "description": "Configure the fan light capabilities.",
         "data": {
-          "has_light": "Has light",
           "has_light_temperature": "Color temperature control",
           "has_light_intensity": "Brightness control"
         }
@@ -60,13 +80,7 @@
           "command_luz_calida": "Warm light command",
           "command_luz_fria": "Cold light command",
           "command_intensidad_alta": "Brightness up command",
-          "command_intensidad_baja": "Brightness down command"
-        }
-      },
-      "helpers_commands_velocidad": {
-        "title": "Fanpy — Speed Commands",
-        "description": "Configure the command names for each speed level, matching what you used in remote.learn_command.",
-        "data": {
+          "command_intensidad_baja": "Brightness down command",
           "command_velocidad_1": "Speed 1 command",
           "command_velocidad_2": "Speed 2 command",
           "command_velocidad_3": "Speed 3 command",
