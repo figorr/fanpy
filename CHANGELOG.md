@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/figorr/fanpy/compare/v1.0.4...v1.0.5) (2026-07-02)
+
+
+### Bug Fixes
+
+* test zip attachment in release workflow ([64720e3](https://github.com/figorr/fanpy/commit/64720e30198e7140ae7ffb47b71ef8382053caa5))
+
 ## [1.0.4](https://github.com/figorr/fanpy/compare/v1.0.3...v1.0.4) (2026-07-02)
 
 
