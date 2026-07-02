@@ -35,6 +35,30 @@ jobs:
           git config user.email "jdcuartero@yahoo.es"
 
       - name: Run semantic-release
+        id: semantic
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
+
+      - name: Get release tag
+        id: tag
+        run: |
+          tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+          echo "Latest tag: $tag"
+
+      - name: Create fanpy.zip
+        if: steps.tag.outputs.tag != ''
+        run: |
+          cd custom_components/fanpy
+          zip -r "$GITHUB_WORKSPACE/fanpy.zip" ./
+          echo "Zip created at $GITHUB_WORKSPACE/fanpy.zip"
+
+      - name: Upload fanpy.zip to release
+        if: steps.tag.outputs.tag != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          files: fanpy.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
