@@ -1,0 +1,26 @@
+name: Publish ZIP Asset
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish-zip:
+    name: Build and attach fanpy.zip
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Create fanpy.zip
+        run: |
+          cd custom_components
+          zip -r ../fanpy.zip fanpy/
+          cd ..
+
+      - name: Upload to Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" fanpy.zip --clobber
