@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/figorr/fanpy/compare/v1.0.0...v1.0.1) (2026-07-02)
+
+
+### Bug Fixes
+
+* add Fanpy prefix to entity names ([7a147c8](https://github.com/figorr/fanpy/commit/7a147c85282729fa1ce81f5a05adb2928688a8f9))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.

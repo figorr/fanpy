@@ -1,11 +1,13 @@
 {
   "domain": "fanpy",
   "name": "Fanpy",
-  "codeowners": ["@figorr"],
+  "codeowners": [
+    "@figorr"
+  ],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/figorr/fanpy",
   "iot_class": "local_push",
   "requirements": [],
-  "version": "1.0.0"
+  "version": "1.0.1"
 }
