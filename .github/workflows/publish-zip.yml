@@ -1,8 +1,9 @@
 name: Publish ZIP Asset
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
@@ -26,4 +27,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" fanpy.zip --clobber
+          gh release upload "${{ github.ref_name }}" fanpy.zip --clobber
