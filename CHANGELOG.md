@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/figorr/fanpy/compare/v1.0.1...v1.0.2) (2026-07-02)
+
+
+### Bug Fixes
+
+* update README ([1bd16a7](https://github.com/figorr/fanpy/commit/1bd16a7716873a29204ce0a030fc6b921623a4e0))
+
 ## [1.0.1](https://github.com/figorr/fanpy/compare/v1.0.0...v1.0.1) (2026-07-02)
 
 
