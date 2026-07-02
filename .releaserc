@@ -22,14 +22,11 @@
           "pyproject.toml",
           "custom_components/fanpy/manifest.json",
           "custom_components/fanpy/version.py",
-          "CHANGELOG.md",
-          "package.json",
-          "package-lock.json"
+          "CHANGELOG.md"
         ],
         "message": "chore(release): v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],
-    "@semantic-release/npm",
     "@semantic-release/github"
   ],
   "repositoryUrl": "https://github.com/figorr/fanpy"
