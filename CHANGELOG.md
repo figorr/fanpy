@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/figorr/fanpy/compare/v1.0.3...v1.0.4) (2026-07-02)
+
+
+### Bug Fixes
+
+* update publish workflow ([5282a1f](https://github.com/figorr/fanpy/commit/5282a1f32c035fe178ede11d55b8fe3ef78652d2))
+
 ## [1.0.3](https://github.com/figorr/fanpy/compare/v1.0.2...v1.0.3) (2026-07-02)
 
 
