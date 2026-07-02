@@ -20,11 +20,24 @@ Fanpy is the **backend companion** for the Fan Custom Card. While the card provi
 
 ## Installation
 
-### HACS (Recommended)
+### HACS (Recommended) — Not available yet
 
 1. Open HACS.
 2. Search for **Fanpy** and install it.
 3. Restart Home Assistant.
+
+### HACS (Repository method)
+
+Install using HACS before the integration is added to the default HACS repository.
+
+1. Open HACS within Home Assistant.
+2. Select the 3-dot button (top right) and then **Custom repositories**.
+3. In the dialog that appears, enter:
+   - **Repository**: `figorr/fanpy`
+   - **Category**: Integration
+4. Click **Add**.
+5. Go to the **Search** tab of HACS and search for **Fanpy**.
+6. Install it and restart Home Assistant.
 
 ### Manual
 
