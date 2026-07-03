@@ -1,7 +1,13 @@
 # Fanpy
 
+![Fanpy Banner](images/banner.png)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+![Python](https://img.shields.io/badge/Language-Python-blue)
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
+[![Release](https://github.com/figorr/fanpy/actions/workflows/release.yml/badge.svg)](https://github.com/figorr/fanpy/actions/workflows/release.yml)
+![GitHub all releases](https://img.shields.io/github/downloads/figorr/fanpy/total)
+![GitHub release](https://img.shields.io/github/downloads/figorr/fanpy/latest/total)
+![Latest release](https://img.shields.io/github/v/release/figorr/fanpy?label=latest)
 
 Custom integration for Home Assistant to configure ceiling fans for use with the [Fan Custom Card](https://github.com/figorr/fan-custom-card) Lovelace card.
 
@@ -12,11 +18,20 @@ Fanpy is the **backend companion** for the Fan Custom Card. While the card provi
 ## Features
 
 - ✅ **Multi-step setup wizard** — area selection, mode choice, light/features toggles, Broadlink configuration
-- ✅ **Two modes**: Remote (Broadlink RF scripts) and Direct (native `switch.*` / `light.*` entities)
-- ✅ **Automatic entity creation**: `switch.*` (power, light), `select.*` (speed), `binary_sensor.*` (state for card), `button.*` (manual triggers)
+- ✅ **Two integration modes**: Remote (Broadlink RF scripts) and Direct (native `switch.*` / `light.*` entities)
+- ✅ **Automatic entity creation**: `switch.*` (power, light), `select.*` (speed), `binary_sensor.*` (state for card)
 - ✅ **YAML generation** — generates `scripts.yaml` with all RF commands ready to copy
 - ✅ **Multi-language support**: English, Spanish, Catalan
 - ✅ **HACS compatible**
+
+### Integration Modes vs Card Modes
+
+| Mode | Description | Integration | Card entity selection | Card service calls |
+|------|-------------|-------------|----------------------|-------------------|
+| **Fanpy Remote** | Fanpy entities (`switch.fanpy_*`, `select.fanpy_*`) + Broadlink RF scripts | Creates all entities + scripts | Auto by prefix (`fanpy_ventilador_{area}_*`) | Calls `script.{prefix}_*` for power/light/speed |
+| **Fanpy Direct** | Fanpy speed select (`select.fanpy_*_velocidad`) + user's own `switch.*` / `light.*` (Shelly) | Creates only `select.fanpy_*_velocidad` and `binary_sensor.fanpy_*` | Manual (`entity_fan`, `entity_light`) | Calls `switch.turn_on/off`, `light.turn_on/off` directly; speed via `script.{prefix}_*` |
+
+The card also supports two manual modes (Helpers and Direct) that don't require the Fanpy integration — see the [card documentation](https://github.com/figorr/fan-custom-card) for details.
 
 ## Installation
 
@@ -33,7 +48,7 @@ Install using HACS before the integration is added to the default HACS repositor
 1. Open HACS within Home Assistant.
 2. Select the 3-dot button (top right) and then **Custom repositories**.
 3. In the dialog that appears, enter:
-   - **Repository**: `figorr/fanpy`
+   - **Repository**: Add the URL to the [repository](https://github.com/figorr/fanpy) 
    - **Category**: Integration
 4. Click **Add**.
 5. Go to the **Search** tab of HACS and search for **Fanpy**.
@@ -54,27 +69,66 @@ Install using HACS before the integration is added to the default HACS repositor
 2. Search for **Fanpy** and select it.
 3. Follow the wizard steps:
 
-   **All modes:**
-   - **Step 1 — Mode**: Choose Remote (Broadlink RF) or Direct (switch.\* / light.\*)
-   - **Step 2 — Area**: Select the area where the fan is located and choose the fan number. If you select 1, the prefix will be `ventilador_{area}`; if 2 or higher, the prefix becomes `ventilador_{area}_{N}` so each fan gets unique entity IDs.
+### Fanpy Remote (Broadlink RF)
 
-   **Direct mode:**
-   - **Step 3 — Fan & Speeds**: Select the existing `switch.*` entity and set the number of speeds
-   - **Step 4 — Light**: Toggle whether the fan has a light
-   - **Step 5 — Light Entity** (if has light): Select the existing `light.*` entity
-   - **Step 6 — Light Features** (if has light): Toggle color temperature and brightness controls
+- **Step 1 — Mode**: Select **Remote**
+- **Step 2 — Area**: Select the area where the fan is located and choose the fan number. If you select 1, the prefix will be `ventilador_{area}`; if 2 or higher, the prefix becomes `ventilador_{area}_{N}` so each fan gets unique entity IDs.
+- **Step 3 — Speeds**: Set the number of speeds (1–10)
+- **Step 4 — Light**: Toggle whether the fan has a light
+- **Step 5 — Light Features** (if has light): Toggle color temperature and brightness controls
+- **Step 6 — Broadlink & Commands**: Select the Broadlink `remote.*` entity, set the remote device name, and configure all RF commands (power, light, temperature, intensity, and each speed level)
 
-   **Remote mode:**
-   - **Step 3 — Speeds**: Set the number of speeds (1–10)
-   - **Step 4 — Light**: Toggle whether the fan has a light
-   - **Step 5 — Light Features** (if has light): Toggle color temperature and brightness controls
-   - **Step 6 — Broadlink & Commands**: Select the Broadlink `remote.*` entity, set the remote device name, and configure all RF commands (power, light, temperature, intensity, and each speed level)
+This mode creates `switch.fanpy_*`, `select.fanpy_*`, `binary_sensor.fanpy_*` plus all RF scripts. Use the card in **Fanpy Remote** mode.
 
-4. The integration creates all entities automatically. In Remote mode, RF scripts are saved for manual copy.
+### Fanpy Direct (Shelly switch.* / light.*)
+
+- **Step 1 — Mode**: Select **Direct**
+- **Step 2 — Area**: Select the area where the fan is located and choose the fan number
+- **Step 3 — Fan & Speeds**: Select the existing `switch.*` entity (e.g. your Shelly relay) and set the number of speeds
+- **Step 4 — Light**: Toggle whether the fan has a light
+- **Step 5 — Light Entity** (if has light): Select the existing `light.*` entity
+- **Step 6 — Light Features** (if has light): Toggle color temperature and brightness controls
+
+This mode creates only `select.fanpy_*_velocidad` and `binary_sensor.fanpy_*`. The card reads your Shelly entities directly. Use the card in **Fanpy Direct** mode.
+
+### Card Configuration
+
+After creating entities with the integration, add the card to your Lovelace dashboard:
+
+```yaml
+type: custom:fan-custom-card
+mode: fanpy_remote        # or fanpy_direct
+prefix: ventilador_bodega  # auto-generated by the integration
+name: BODEGA               # auto-generated by the integration
+has_light: true
+```
+
+For **Fanpy Direct**, you must also specify the entity IDs:
+
+```yaml
+type: custom:fan-custom-card
+mode: fanpy_direct
+name: BODEGA
+entity_fan: switch.shelly_relay_0
+entity_light: light.shelly_rgb_1
+has_light: true
+```
 
 ### Generated Files
 
 After setup in Remote mode, check `custom_components/fanpy/generated/scripts.yaml` for the complete Broadlink RF scripts. Copy its content into your Home Assistant `scripts.yaml` to activate RF commands.
+
+It is important the script will call the exact device and command you set during the setup. Be sure you writte the same learned at HA  using the **`remote.learn_command`**.
+
+You can test the learned command using the **`remote.send_command`**.
+
+- **Broadlink learn command example:**
+
+  ![Broadlink Remote Learn Command](images/broadlink_remote_learn_command.png)
+
+- **Broadlink send command test example:**
+
+  ![Broadlink Remote Send Command](images/broadlink_remote_send_command.png)
 
 ### Entity Naming
 
