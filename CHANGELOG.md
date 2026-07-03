@@ -1,3 +1,14 @@
+## [1.0.6](https://github.com/figorr/fanpy/compare/v1.0.5...v1.0.6) (2026-07-03)
+
+
+### Bug Fixes
+
+* fix scripts.yaml creation and restoration ([fd26fef](https://github.com/figorr/fanpy/commit/fd26fef502f088536d71ac33c62c9ae8b2c0f204))
+* images for README ([f60148a](https://github.com/figorr/fanpy/commit/f60148ab34fb6549012acba6fb9f3e19d5adaf68))
+* improve select entity creation ([2bc85dd](https://github.com/figorr/fanpy/commit/2bc85dd12033658bce2b56221270d1d2a1f9721e))
+* remove unnecessary button entities ([df8e2c1](https://github.com/figorr/fanpy/commit/df8e2c1ac8817f8a944fb3163eb01f6202be89d1))
+* update README ([5aaf09e](https://github.com/figorr/fanpy/commit/5aaf09ec71ddb7757ea8bc6139f1e5eea9e1c2c5))
+
 ## [1.0.5](https://github.com/figorr/fanpy/compare/v1.0.4...v1.0.5) (2026-07-02)
 
 
