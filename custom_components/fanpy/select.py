@@ -19,10 +19,9 @@ async def async_setup_entry(
     name = entry.data.get(CONF_NAME, prefix)
     num_speeds = entry.data.get(CONF_NUM_SPEEDS, 6)
 
-    if num_speeds > 1:
-        async_add_entities([
-            FanSpeedSelect(hass, entry, prefix, name, num_speeds),
-        ])
+    async_add_entities([
+        FanSpeedSelect(hass, entry, prefix, name, num_speeds),
+    ])
 
 
 class FanSpeedSelect(SelectEntity):
