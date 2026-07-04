@@ -191,6 +191,12 @@ To change settings after initial setup:
 
 - Home Assistant 2025.12.5 or newer
 - [Fanpy Card](https://github.com/figorr/fanpy-card) (for the Lovelace UI)
+  - **The card**
+
+    ![Fanpy-Card](images/fanpy-card.png)
+  - **The editor**
+  
+    ![Fanpy-Card Editor](images/fanpy-card-editor.png)
 
 ## Development
 
