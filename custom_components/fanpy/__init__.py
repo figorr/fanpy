@@ -14,15 +14,17 @@ DOMAIN = "fanpy"
 PLATFORMS = ["binary_sensor", "switch", "select"]
 
 
+async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+    return True
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = {}
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
-    mode = entry.data.get(CONF_MODE, CONF_MODE_REMOTE)
-    if mode == CONF_MODE_REMOTE:
-        await _generate_scripts_yaml(hass, entry)
+    await _generate_scripts_yaml(hass, entry)
 
     return True
 
@@ -37,12 +39,12 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     prefix = entry.data.get(CONF_PREFIX, "ventilador")
     integration_dir = os.path.dirname(__file__)
-    scripts_path = os.path.join(integration_dir, "generated", "scripts.yaml")
 
-    def _remove():
-        if not os.path.exists(scripts_path):
+    def _remove_file(filename):
+        path = os.path.join(integration_dir, "generated", filename)
+        if not os.path.exists(path):
             return
-        with open(scripts_path, "r", encoding="utf-8") as f:
+        with open(path, "r", encoding="utf-8") as f:
             content = f.read()
         marker = f"# Prefix: {prefix}"
         if marker not in content:
@@ -60,12 +62,13 @@ async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
                 i += 1
         cleaned = "\n".join(result)
         if cleaned.strip():
-            with open(scripts_path, "w", encoding="utf-8") as f:
+            with open(path, "w", encoding="utf-8") as f:
                 f.write(cleaned + "\n")
         else:
-            os.remove(scripts_path)
+            os.remove(path)
 
-    await hass.async_add_executor_job(_remove)
+    await hass.async_add_executor_job(_remove_file, "scripts.yaml")
+
 
 
 async def _generate_scripts_yaml(hass: HomeAssistant, entry: ConfigEntry) -> None:
@@ -74,46 +77,49 @@ async def _generate_scripts_yaml(hass: HomeAssistant, entry: ConfigEntry) -> Non
     os.makedirs(output_dir, exist_ok=True)
     scripts_path = os.path.join(output_dir, "scripts.yaml")
 
-    # Gather all Remote-mode entries and regenerate the complete file
     entries = hass.config_entries.async_entries(DOMAIN)
 
     def _write():
         blocks = []
         for e in entries:
-            if e.data.get(CONF_MODE, CONF_MODE_REMOTE) != CONF_MODE_REMOTE:
-                continue
             d = e.data
+            mode = d.get(CONF_MODE, CONF_MODE_REMOTE)
             p = d.get(CONF_PREFIX, "ventilador")
             n = d.get(CONF_NAME, p)
-            ns = d.get(CONF_NUM_SPEEDS, 6)
-            if ns <= 1:
-                ns = 0
 
-            bd_id = d.get(CONF_BROADLINK_DEVICE_ID, "YOUR_BROADLINK_DEVICE_ID")
-            be_id = d.get(CONF_BROADLINK_ENTITY_ID, "")
-            rd = d.get(CONF_REMOTE_DEVICE, p)
+            if mode == CONF_MODE_REMOTE:
+                ns = d.get(CONF_NUM_SPEEDS, 6)
+                if ns <= 1:
+                    ns = 0
 
-            cmd_on = d.get(CONF_COMMAND_ON, DEFAULT_COMMAND_ON)
-            cmd_off = d.get(CONF_COMMAND_OFF, DEFAULT_COMMAND_OFF)
-            cmd_luz = d.get(CONF_COMMAND_LUZ, DEFAULT_COMMAND_LUZ)
-            cmd_luz_calida = d.get(CONF_COMMAND_LUZ_CALIDA, DEFAULT_COMMAND_LUZ_CALIDA)
-            cmd_luz_fria = d.get(CONF_COMMAND_LUZ_FRIA, DEFAULT_COMMAND_LUZ_FRIA)
-            cmd_int_alta = d.get(CONF_COMMAND_INTENSIDAD_ALTA, DEFAULT_COMMAND_INTENSIDAD_ALTA)
-            cmd_int_baja = d.get(CONF_COMMAND_INTENSIDAD_BAJA, DEFAULT_COMMAND_INTENSIDAD_BAJA)
+                bd_id = d.get(CONF_BROADLINK_DEVICE_ID, "YOUR_BROADLINK_DEVICE_ID")
+                be_id = d.get(CONF_BROADLINK_ENTITY_ID, "")
+                rd = d.get(CONF_REMOTE_DEVICE, p)
 
-            vcmd = {}
-            for i in range(1, ns + 1):
-                key = f"{CONF_COMMAND_VELOCIDAD_PREFIX}_{i}"
-                vcmd[i] = d.get(key, f"{DEFAULT_COMMAND_VELOCIDAD_PREFIX}{i}")
+                cmd_on = d.get(CONF_COMMAND_ON, DEFAULT_COMMAND_ON)
+                cmd_off = d.get(CONF_COMMAND_OFF, DEFAULT_COMMAND_OFF)
+                cmd_luz = d.get(CONF_COMMAND_LUZ, DEFAULT_COMMAND_LUZ)
+                cmd_luz_calida = d.get(CONF_COMMAND_LUZ_CALIDA, DEFAULT_COMMAND_LUZ_CALIDA)
+                cmd_luz_fria = d.get(CONF_COMMAND_LUZ_FRIA, DEFAULT_COMMAND_LUZ_FRIA)
+                cmd_int_alta = d.get(CONF_COMMAND_INTENSIDAD_ALTA, DEFAULT_COMMAND_INTENSIDAD_ALTA)
+                cmd_int_baja = d.get(CONF_COMMAND_INTENSIDAD_BAJA, DEFAULT_COMMAND_INTENSIDAD_BAJA)
 
-            block = _build_scripts_yaml(
-                p, n, ns, d.get(CONF_HAS_LIGHT, False),
-                d.get(CONF_HAS_LIGHT_TEMPERATURE, False),
-                d.get(CONF_HAS_LIGHT_INTENSITY, False),
-                bd_id, be_id, rd,
-                cmd_on, cmd_off, cmd_luz, cmd_luz_calida, cmd_luz_fria,
-                cmd_int_alta, cmd_int_baja, vcmd,
-            )
+                vcmd = {}
+                for i in range(1, ns + 1):
+                    key = f"{CONF_COMMAND_VELOCIDAD_PREFIX}_{i}"
+                    vcmd[i] = d.get(key, f"{DEFAULT_COMMAND_VELOCIDAD_PREFIX}{i}")
+
+                block = _build_scripts_yaml(
+                    p, n, ns, d.get(CONF_HAS_LIGHT, False),
+                    d.get(CONF_HAS_LIGHT_TEMPERATURE, False),
+                    d.get(CONF_HAS_LIGHT_INTENSITY, False),
+                    bd_id, be_id, rd,
+                    cmd_on, cmd_off, cmd_luz, cmd_luz_calida, cmd_luz_fria,
+                    cmd_int_alta, cmd_int_baja, vcmd,
+                )
+            else:
+                block = ""
+
             if block.strip():
                 blocks.append(block)
 
@@ -144,10 +150,10 @@ def _build_scripts_yaml(
 
     def _target_block():
         if broadlink_entity_id:
-            return f"    entity_id: {broadlink_entity_id}"
+            return f"      entity_id: {broadlink_entity_id}"
         if broadlink_device_id and broadlink_device_id != "YOUR_BROADLINK_DEVICE_ID":
-            return f"    entity_id: {broadlink_device_id}"
-        return "    entity_id: YOUR_BROADLINK_ENTITY_ID"
+            return f"      entity_id: {broadlink_device_id}"
+        return "      entity_id: YOUR_BROADLINK_ENTITY_ID"
 
     def _append_script(action_name, display_name, command):
         lines.append(f"{prefix}_{action_name}:")
@@ -166,7 +172,6 @@ def _build_scripts_yaml(
         lines.append("  description: ''")
         lines.append("")
 
-    # Section header
     lines.append(f"# Prefix: {prefix}")
     lines.append(f"# Name: {name}")
     lines.append(f"# Device ID: {broadlink_device_id}")
@@ -193,3 +198,6 @@ def _build_scripts_yaml(
             _append_script(f"velocidad_{i}", f"{name} Velocidad {i}", cmd)
 
     return "\n".join(lines)
+
+
+

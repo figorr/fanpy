@@ -68,6 +68,20 @@
           "has_light_intensity": "Brightness control"
         }
       },
+      "helpers_timer": {
+        "title": "Fanpy — Timer",
+        "description": "Select the number of timers. Timers must be created manually using Home Assistant's timer helper ('Settings' > 'Helpers' > 'Timer'). The card will show this many timer buttons.",
+        "data": {
+          "num_timers": "Number of timers"
+        }
+      },
+      "helpers_timer_direct": {
+        "title": "Fanpy — Timer",
+        "description": "Select the number of timers. Timers must be created manually using Home Assistant's timer helper ('Settings' > 'Helpers' > 'Timer'). The card will show this many timer buttons.",
+        "data": {
+          "num_timers": "Number of timers"
+        }
+      },
       "helpers_broadlink": {
         "title": "Fanpy — Broadlink & Commands",
         "description": "Select the Broadlink device and configure the commands learned via remote.learn_command. Use the same device and command names you used when learning each RF signal.",
@@ -102,18 +116,6 @@
     },
     "abort": {
       "already_configured": "This area is already configured"
-    }
-  },
-  "options": {
-    "step": {
-      "init": {
-        "title": "Fanpy — Options",
-        "data": {
-          "has_light": "Has light",
-          "has_light_temperature": "Color temperature control",
-          "has_light_intensity": "Brightness control"
-        }
-      }
     }
   }
 }

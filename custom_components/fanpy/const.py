@@ -15,6 +15,7 @@ CONF_ENTITY_LIGHT = "entity_light"
 CONF_HAS_LIGHT = "has_light"
 CONF_HAS_LIGHT_TEMPERATURE = "has_light_temperature"
 CONF_HAS_LIGHT_INTENSITY = "has_light_intensity"
+CONF_NUM_TIMERS = "num_timers"
 CONF_NUM_SPEEDS = "num_speeds"
 
 CONF_FAN_NUMBER = "fan_number"
@@ -31,7 +32,6 @@ CONF_COMMAND_LUZ_FRIA = "command_luz_fria"
 CONF_COMMAND_INTENSIDAD_ALTA = "command_intensidad_alta"
 CONF_COMMAND_INTENSIDAD_BAJA = "command_intensidad_baja"
 CONF_COMMAND_VELOCIDAD_PREFIX = "command_velocidad"
-
 DEFAULT_COMMAND_ON = "on"
 DEFAULT_COMMAND_OFF = "off"
 DEFAULT_COMMAND_LUZ = "luz"
@@ -43,3 +43,5 @@ DEFAULT_COMMAND_VELOCIDAD_PREFIX = "velocidad"
 
 MAX_SPEEDS = 10
 MIN_SPEEDS = 1
+
+

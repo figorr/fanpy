@@ -19,9 +19,15 @@ async def async_setup_entry(
     name = entry.data.get(CONF_NAME, prefix)
     num_speeds = entry.data.get(CONF_NUM_SPEEDS, 6)
 
-    async_add_entities([
+    entities = [
         FanSpeedSelect(hass, entry, prefix, name, num_speeds),
-    ])
+    ]
+
+    num_timers = int(entry.data.get(CONF_NUM_TIMERS, 0))
+    if num_timers >= 0:
+        entities.append(FanpyTimerCountSelect(hass, entry, prefix, name))
+
+    async_add_entities(entities)
 
 
 class FanSpeedSelect(SelectEntity):
@@ -52,3 +58,24 @@ class FanSpeedSelect(SelectEntity):
             await self._hass.services.async_call(
                 "switch", "turn_on", {"entity_id": power_switch}, blocking=True
             )
+
+
+class FanpyTimerCountSelect(SelectEntity):
+
+    _attr_icon = "mdi:timer-outline"
+
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry, prefix: str, name: str) -> None:
+        self._hass = hass
+        self._entry = entry
+        self._prefix = prefix
+        self._attr_name = f"Fanpy {name} Timers"
+        self._attr_unique_id = f"{CONF_ENTITY_PREFIX}_{prefix}_num_timers"
+        self._attr_options = [str(i) for i in range(0, 4)]
+        self._attr_current_option = str(int(entry.data.get(CONF_NUM_TIMERS, 0)))
+
+    async def async_select_option(self, option: str) -> None:
+        self._hass.config_entries.async_update_entry(
+            self._entry,
+            data={**self._entry.data, CONF_NUM_TIMERS: int(option)},
+        )
+        await self._hass.config_entries.async_reload(self._entry.entry_id)

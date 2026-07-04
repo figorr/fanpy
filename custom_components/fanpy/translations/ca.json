@@ -68,6 +68,20 @@
           "has_light_intensity": "Control d'intensitat"
         }
       },
+      "helpers_timer": {
+        "title": "Fanpy — Temporitzador",
+        "description": "Selecciona el nombre de temporitzadors. Els temporitzadors s'han de crear manualment utilitzant l'\"Ajudant\" de temporitzador de Home Assistant ('Configuraci\u00f3' > 'Ajudants' > 'Temporitzador'). La targeta mostrar\u00e0 aquesta quantitat de botons de temporitzador.",
+        "data": {
+          "num_timers": "Nombre de temporitzadors"
+        }
+      },
+      "helpers_timer_direct": {
+        "title": "Fanpy — Temporitzador",
+        "description": "Selecciona el nombre de temporitzadors. Els temporitzadors s'han de crear manualment utilitzant l'\"Ajudant\" de temporitzador de Home Assistant ('Configuraci\u00f3' > 'Ajudants' > 'Temporitzador'). La targeta mostrar\u00e0 aquesta quantitat de botons de temporitzador.",
+        "data": {
+          "num_timers": "Nombre de temporitzadors"
+        }
+      },
       "helpers_broadlink": {
         "title": "Fanpy — Broadlink i Comandes",
         "description": "Selecciona el dispositiu Broadlink i configura les comandes apreses amb remote.learn_command. Utilitza el mateix dispositiu i noms de comanda que vas usar en aprendre cada senyal RF.",
@@ -102,18 +116,6 @@
     },
     "abort": {
       "already_configured": "Aquesta \u00e0rea ja est\u00e0 configurada"
-    }
-  },
-  "options": {
-    "step": {
-      "init": {
-        "title": "Fanpy — Opcions",
-        "data": {
-          "has_light": "T\u00e9 llum",
-          "has_light_temperature": "Control de temperatura de color",
-          "has_light_intensity": "Control d'intensitat"
-        }
-      }
     }
   }
 }

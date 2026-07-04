@@ -5,7 +5,7 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.const import CONF_MODE
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv, selector
 
 from .const import *
@@ -100,6 +100,16 @@ def _build_schemas(
         return vol.Schema({
             vol.Optional(CONF_HAS_LIGHT_TEMPERATURE, default=data.get(CONF_HAS_LIGHT_TEMPERATURE, False)): selector.BooleanSelector(),
             vol.Optional(CONF_HAS_LIGHT_INTENSITY, default=data.get(CONF_HAS_LIGHT_INTENSITY, False)): selector.BooleanSelector(),
+        })
+
+    if step == "helpers_timer":
+        return vol.Schema({
+            vol.Optional(CONF_NUM_TIMERS, default=str(data.get(CONF_NUM_TIMERS, 0))): selector.SelectSelector(
+                selector.SelectSelectorConfig(
+                    options=[str(i) for i in range(0, 4)],
+                    mode=selector.SelectSelectorMode.DROPDOWN,
+                )
+            ),
         })
 
     if step == "helpers_broadlink":
@@ -198,10 +208,7 @@ class FanpyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             self._data.update(user_input)
             if self._data.get(CONF_HAS_LIGHT, False):
                 return await self.async_step_direct_light_entity()
-            return self.async_create_entry(
-                title=self._data[CONF_NAME],
-                data=self._data,
-            )
+            return await self.async_step_helpers_timer()
 
         schema = _build_schemas(self._data, step="direct_light")
         return self.async_show_form(step_id="direct_light", data_schema=schema)
@@ -217,10 +224,7 @@ class FanpyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_direct_light_features(self, user_input=None):
         if user_input is not None:
             self._data.update(user_input)
-            return self.async_create_entry(
-                title=self._data[CONF_NAME],
-                data=self._data,
-            )
+            return await self.async_step_helpers_timer()
 
         schema = _build_schemas(self._data, step="direct_light_features")
         return self.async_show_form(step_id="direct_light_features", data_schema=schema)
@@ -239,7 +243,7 @@ class FanpyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             self._data.update(user_input)
             if self._data.get(CONF_HAS_LIGHT, False):
                 return await self.async_step_helpers_light_features()
-            return await self.async_step_helpers_broadlink()
+            return await self.async_step_helpers_timer()
 
         schema = _build_schemas(self._data, step="helpers_light")
         return self.async_show_form(step_id="helpers_light", data_schema=schema)
@@ -247,10 +251,31 @@ class FanpyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_helpers_light_features(self, user_input=None):
         if user_input is not None:
             self._data.update(user_input)
-            return await self.async_step_helpers_broadlink()
+            return await self.async_step_helpers_timer()
 
         schema = _build_schemas(self._data, step="helpers_light_features")
         return self.async_show_form(step_id="helpers_light_features", data_schema=schema)
+
+    async def async_step_helpers_timer(self, user_input=None):
+        if user_input is not None:
+            user_input[CONF_NUM_TIMERS] = int(user_input.get(CONF_NUM_TIMERS, 0))
+            self._data.update(user_input)
+            if self._mode == CONF_MODE_DIRECT:
+                return self.async_create_entry(
+                    title=self._data[CONF_NAME],
+                    data=self._data,
+                )
+            return await self.async_step_helpers_broadlink()
+
+        schema = _build_schemas(self._data, step="helpers_timer")
+        step_id = "helpers_timer_direct" if self._mode == CONF_MODE_DIRECT else "helpers_timer"
+        return self.async_show_form(
+            step_id=step_id,
+            data_schema=schema,
+        )
+
+    async def async_step_helpers_timer_direct(self, user_input=None):
+        return await self.async_step_helpers_timer(user_input)
 
     async def async_step_helpers_broadlink(self, user_input=None):
         if user_input is not None:
@@ -264,25 +289,4 @@ class FanpyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         schema = _build_schemas(self._data, step="helpers_broadlink", num_speeds=num_speeds)
         return self.async_show_form(step_id="helpers_broadlink", data_schema=schema)
 
-    @staticmethod
-    @callback
-    def async_get_options_flow(config_entry):
-        return FanpyOptionsFlow(config_entry)
 
-
-class FanpyOptionsFlow(config_entries.OptionsFlow):
-
-    def __init__(self, config_entry):
-        self.config_entry = config_entry
-
-    async def async_step_init(self, user_input=None):
-        if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
-
-        data = self.config_entry.data
-        schema = vol.Schema({
-            vol.Optional(CONF_HAS_LIGHT, default=data.get(CONF_HAS_LIGHT, False)): selector.BooleanSelector(),
-            vol.Optional(CONF_HAS_LIGHT_TEMPERATURE, default=data.get(CONF_HAS_LIGHT_TEMPERATURE, False)): selector.BooleanSelector(),
-            vol.Optional(CONF_HAS_LIGHT_INTENSITY, default=data.get(CONF_HAS_LIGHT_INTENSITY, False)): selector.BooleanSelector(),
-        })
-        return self.async_show_form(step_id="init", data_schema=schema)

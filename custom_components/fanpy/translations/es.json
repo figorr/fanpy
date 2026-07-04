@@ -68,6 +68,20 @@
           "has_light_intensity": "Control de intensidad"
         }
       },
+      "helpers_timer": {
+        "title": "Fanpy — Temporizador",
+        "description": "Selecciona el n\u00famero de temporizadores. Los temporizadores deben crearse manualmente utilizando el 'Ayudante' de temporizador de Home Assistant ('Configuraci\u00f3n' > 'Ayudantes' > 'Temporizador'). La tarjeta mostrar\u00e1 esta cantidad de botones de temporizador.",
+        "data": {
+          "num_timers": "N\u00famero de temporizadores"
+        }
+      },
+      "helpers_timer_direct": {
+        "title": "Fanpy — Temporizador",
+        "description": "Selecciona el n\u00famero de temporizadores. Los temporizadores deben crearse manualmente utilizando el 'Ayudante' de temporizador de Home Assistant ('Configuraci\u00f3n' > 'Ayudantes' > 'Temporizador'). La tarjeta mostrar\u00e1 esta cantidad de botones de temporizador.",
+        "data": {
+          "num_timers": "N\u00famero de temporizadores"
+        }
+      },
       "helpers_broadlink": {
         "title": "Fanpy — Broadlink y Comandos",
         "description": "Selecciona el dispositivo Broadlink y configura los comandos aprendidos con remote.learn_command. Usa el mismo dispositivo y nombres de comando que usaste al aprender cada se\u00f1al RF.",
@@ -102,18 +116,6 @@
     },
     "abort": {
       "already_configured": "Esta \u00e1rea ya est\u00e1 configurada"
-    }
-  },
-  "options": {
-    "step": {
-      "init": {
-        "title": "Fanpy — Opciones",
-        "data": {
-          "has_light": "Tiene luz",
-          "has_light_temperature": "Control de temperatura de color",
-          "has_light_intensity": "Control de intensidad"
-        }
-      }
     }
   }
 }
