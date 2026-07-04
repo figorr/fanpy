@@ -1,3 +1,27 @@
+# [2.0.0](https://github.com/figorr/fanpy/compare/v1.0.6...v2.0.0) (2026-07-04)
+
+
+* feat!: timer redesign — num_timers dropdown, native timer.start/cancel, auto power-off on expiry ([800c962](https://github.com/figorr/fanpy/commit/800c96280fde0c6b8ea489ef0f6811e4c70e79f4))
+
+
+### BREAKING CHANGES
+
+* has_timer toggle replaced by num_timers (0-3) dropdown in config flow.
+* OptionsFlow removed; re-add integration to change settings.
+* IR timer commands (command_timer_*) no longer requested.
+* No timer entities or timer scripts are auto-generated.
+* Card now calls native timer.start/cancel services instead of scripts.
+* Timer expiry triggers automatic power-off via state listener.
+
+Features:
+- num_timers select entity (select.fanpy_*_num_timers) bridges count to card
+- Auto power-off when a timer naturally expires (active -> idle transition)
+- Timer cancellation by user is tracked to prevent false power-off triggers
+- Config flow descriptions updated with detailed timer helper path
+- Services.yaml removed (no custom fanpy.* timer services)
+- has_ring toggle to hide SVG ring, keeping speed buttons visible
+- Speed section label (VELOCIDAD) added above speed buttons
+
 ## [1.0.6](https://github.com/figorr/fanpy/compare/v1.0.5...v1.0.6) (2026-07-03)
 
 
