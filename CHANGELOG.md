@@ -1,3 +1,12 @@
+## [2.0.1](https://github.com/figorr/fanpy/compare/v2.0.0...v2.0.1) (2026-07-04)
+
+
+### Bug Fixes
+
+* branding images ([a2e8742](https://github.com/figorr/fanpy/commit/a2e87426c6c2adcf1dbac21ddf0e95a46c249e9a))
+* fanpy-card images ([b456211](https://github.com/figorr/fanpy/commit/b456211150f887b9007d7d91cf1ca5a6a52d02ac))
+* update README ([c0f7821](https://github.com/figorr/fanpy/commit/c0f7821159f195c1e344eac4e3eb8f8ac6fdac33))
+
 # [2.0.0](https://github.com/figorr/fanpy/compare/v1.0.6...v2.0.0) (2026-07-04)
 
 
