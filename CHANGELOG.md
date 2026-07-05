@@ -1,3 +1,12 @@
+## [2.0.2](https://github.com/figorr/fanpy/compare/v2.0.1...v2.0.2) (2026-07-05)
+
+
+### Bug Fixes
+
+* fix scripts.yaml generation ([e3f4292](https://github.com/figorr/fanpy/commit/e3f42929c978fcd9c8ad2161860fb34e10453501))
+* update images ([903fa09](https://github.com/figorr/fanpy/commit/903fa09e5effb6424429ae45c9af2292aed0065f))
+* update README scripts example to match new generated formats ([fcafc73](https://github.com/figorr/fanpy/commit/fcafc7385a69519dbfa78457ecb761c113d7d4d3))
+
 ## [2.0.1](https://github.com/figorr/fanpy/compare/v2.0.0...v2.0.1) (2026-07-04)
 
 
