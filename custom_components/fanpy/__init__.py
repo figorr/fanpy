@@ -79,6 +79,18 @@ async def _generate_scripts_yaml(hass: HomeAssistant, entry: ConfigEntry) -> Non
 
     entries = hass.config_entries.async_entries(DOMAIN)
 
+    # Resolve remote entity_ids to HA device_ids for proper device_id targeting
+    resolved_device_ids = {}
+    for e in entries:
+        d = e.data
+        if d.get(CONF_MODE, CONF_MODE_REMOTE) == CONF_MODE_REMOTE:
+            entity_id = d.get(CONF_BROADLINK_DEVICE_ID, "")
+            if entity_id:
+                ent_reg = hass.data['entity_registry']
+                entry_er = ent_reg.async_get(entity_id)
+                if entry_er and entry_er.device_id:
+                    resolved_device_ids[e.entry_id] = entry_er.device_id
+
     def _write():
         blocks = []
         for e in entries:
@@ -95,6 +107,7 @@ async def _generate_scripts_yaml(hass: HomeAssistant, entry: ConfigEntry) -> Non
                 bd_id = d.get(CONF_BROADLINK_DEVICE_ID, "YOUR_BROADLINK_DEVICE_ID")
                 be_id = d.get(CONF_BROADLINK_ENTITY_ID, "")
                 rd = d.get(CONF_REMOTE_DEVICE, p)
+                resolved_dev_id = resolved_device_ids.get(e.entry_id)
 
                 cmd_on = d.get(CONF_COMMAND_ON, DEFAULT_COMMAND_ON)
                 cmd_off = d.get(CONF_COMMAND_OFF, DEFAULT_COMMAND_OFF)
@@ -116,6 +129,7 @@ async def _generate_scripts_yaml(hass: HomeAssistant, entry: ConfigEntry) -> Non
                     bd_id, be_id, rd,
                     cmd_on, cmd_off, cmd_luz, cmd_luz_calida, cmd_luz_fria,
                     cmd_int_alta, cmd_int_baja, vcmd,
+                    resolved_device_id=resolved_dev_id,
                 )
             else:
                 block = ""
@@ -145,17 +159,20 @@ def _build_scripts_yaml(
     cmd_luz_calida: str, cmd_luz_fria: str,
     cmd_int_alta: str, cmd_int_baja: str,
     velocidad_commands: dict,
+    resolved_device_id: str | None = None,
 ) -> str:
     lines = []
 
     def _target_block():
-        if broadlink_entity_id:
-            return f"      entity_id: {broadlink_entity_id}"
+        if resolved_device_id:
+            return f"      device_id: {resolved_device_id}"
         if broadlink_device_id and broadlink_device_id != "YOUR_BROADLINK_DEVICE_ID":
             return f"      entity_id: {broadlink_device_id}"
+        if broadlink_entity_id:
+            return f"      entity_id: {broadlink_entity_id}"
         return "      entity_id: YOUR_BROADLINK_ENTITY_ID"
 
-    def _append_script(action_name, display_name, command):
+    def _append_script(action_name, display_name, command, extra_actions=None):
         lines.append(f"{prefix}_{action_name}:")
         lines.append("  sequence:")
         lines.append("  - action: remote.send_command")
@@ -168,21 +185,40 @@ def _build_scripts_yaml(
         lines.append(f"      command: '{command}'")
         lines.append("    target:")
         lines.append(_target_block())
+        if extra_actions:
+            for service, entity_id, data in extra_actions:
+                lines.append("  - action: " + service)
+                lines.append("    metadata: {}")
+                lines.append("    target:")
+                lines.append(f"      entity_id: {entity_id}")
+                if data:
+                    lines.append("    data:")
+                    for k, v in data.items():
+                        lines.append(f"      {k}: {v}")
+                else:
+                    lines.append("    data: {}")
         lines.append(f"  alias: \"{display_name}\"")
         lines.append("  description: ''")
         lines.append("")
+
+    def _entity_action(service, entity_id, data=None):
+        return (service, entity_id, data)
 
     lines.append(f"# Prefix: {prefix}")
     lines.append(f"# Name: {name}")
     lines.append(f"# Device ID: {broadlink_device_id}")
     lines.append("")
 
-    _append_script("power_on", f"{name} Power ON", cmd_on)
-    _append_script("power_off", f"{name} Power OFF", cmd_off)
+    _append_script("power_on", f"{name} Power ON", cmd_on,
+        [_entity_action("switch.turn_on", f"switch.{CONF_ENTITY_PREFIX}_{prefix}_power")])
+    _append_script("power_off", f"{name} Power OFF", cmd_off,
+        [_entity_action("switch.turn_off", f"switch.{CONF_ENTITY_PREFIX}_{prefix}_power")])
 
     if has_light:
-        _append_script("luz_on", f"{name} Luz ON", cmd_luz)
-        _append_script("luz_off", f"{name} Luz OFF", cmd_luz)
+        _append_script("luz_on", f"{name} Luz ON", cmd_luz,
+            [_entity_action("switch.turn_on", f"switch.{CONF_ENTITY_PREFIX}_{prefix}_luz")])
+        _append_script("luz_off", f"{name} Luz OFF", cmd_luz,
+            [_entity_action("switch.turn_off", f"switch.{CONF_ENTITY_PREFIX}_{prefix}_luz")])
 
         if has_temp:
             _append_script("luz_calida", f"{name} Luz Cálida", cmd_luz_calida)
@@ -195,7 +231,9 @@ def _build_scripts_yaml(
     if num_speeds > 1:
         for i in range(1, num_speeds + 1):
             cmd = velocidad_commands.get(i, f"velocidad{i}")
-            _append_script(f"velocidad_{i}", f"{name} Velocidad {i}", cmd)
+            _append_script(f"velocidad_{i}", f"{name} Velocidad {i}", cmd,
+                [_entity_action("select.select_option", f"select.{CONF_ENTITY_PREFIX}_{prefix}_velocidad", {"option": str(i)}),
+                 _entity_action("switch.turn_on", f"switch.{CONF_ENTITY_PREFIX}_{prefix}_power")])
 
     return "\n".join(lines)
 
