@@ -4,6 +4,7 @@ from homeassistant.components.switch import SwitchEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.restore_state import RestoreEntity
 
 from .const import *
 
@@ -31,7 +32,7 @@ async def async_setup_entry(
     ])
 
 
-class FanPowerSwitch(SwitchEntity):
+class FanPowerSwitch(SwitchEntity, RestoreEntity):
 
     _attr_icon = "mdi:fan"
 
@@ -41,7 +42,11 @@ class FanPowerSwitch(SwitchEntity):
         self._prefix = prefix
         self._attr_name = f"Fanpy {name} Power"
         self._attr_unique_id = f"{CONF_ENTITY_PREFIX}_{prefix}_power"
-        self._attr_is_on = False
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        state = await self.async_get_last_state()
+        self._attr_is_on = state is not None and state.state == "on"
 
     async def async_turn_on(self, **kwargs) -> None:
         self._attr_is_on = True
@@ -58,7 +63,7 @@ class FanPowerSwitch(SwitchEntity):
         )
 
 
-class FanLightSwitch(SwitchEntity):
+class FanLightSwitch(SwitchEntity, RestoreEntity):
 
     _attr_icon = "mdi:lightbulb"
 
@@ -68,7 +73,11 @@ class FanLightSwitch(SwitchEntity):
         self._prefix = prefix
         self._attr_name = f"Fanpy {name} Luz"
         self._attr_unique_id = f"{CONF_ENTITY_PREFIX}_{prefix}_luz"
-        self._attr_is_on = False
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        state = await self.async_get_last_state()
+        self._attr_is_on = state is not None and state.state == "on"
 
     async def async_turn_on(self, **kwargs) -> None:
         self._attr_is_on = True
