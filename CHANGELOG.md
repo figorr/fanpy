@@ -1,3 +1,10 @@
+## [2.0.3](https://github.com/figorr/fanpy/compare/v2.0.2...v2.0.3) (2026-07-05)
+
+
+### Bug Fixes
+
+* fix switch state restore ([7a0cf5f](https://github.com/figorr/fanpy/commit/7a0cf5f5f667f55980821a669dc1df30a3017830))
+
 ## [2.0.2](https://github.com/figorr/fanpy/compare/v2.0.1...v2.0.2) (2026-07-05)
 
 
