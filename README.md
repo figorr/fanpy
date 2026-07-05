@@ -151,18 +151,61 @@ If you prefer to manage scripts yourself:
 
 ### About the generated scripts
 
-For **Remote mode**, each script sends an RF command via Broadlink:
+For **Remote mode**, each script sends an RF command via Broadlink and updates the Fanpy entities so the card reflects the correct state:
 
 ```yaml
 ventilador_salon_power_on:
   sequence:
   - action: remote.send_command
+    metadata: {}
     data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
       device: ventilador_salon
       command: 'on'
     target:
-      entity_id: remote.broadlink_salon
+      device_id: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
+  - action: switch.turn_on
+    metadata: {}
+    target:
+      entity_id: switch.fanpy_ventilador_salon_power
+    data: {}
+  alias: "Ventilador Salón Power ON"
+  description: ''
 ```
+
+Speed scripts also update the speed selector and ensure power is on:
+
+```yaml
+ventilador_salon_velocidad_1:
+  sequence:
+  - action: remote.send_command
+    metadata: {}
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: ventilador_salon
+      command: 'velocidad1'
+    target:
+      device_id: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
+  - action: select.select_option
+    metadata: {}
+    target:
+      entity_id: select.fanpy_ventilador_salon_velocidad
+    data:
+      option: '1'
+  - action: switch.turn_on
+    metadata: {}
+    target:
+      entity_id: switch.fanpy_ventilador_salon_power
+    data: {}
+  alias: "Ventilador Salón Velocidad 1"
+  description: ''
+```
+
+> The `device_id` is automatically resolved from the Broadlink remote entity you selected during setup. No manual configuration needed.
 
 Make sure the command names match what you learned with `remote.learn_command`. You can test them with `remote.send_command`.
 
@@ -196,6 +239,8 @@ To change settings after initial setup:
     ![Fanpy-Card](images/fanpy-card.png)
   - **The editor**
   
+    ![Fanpy-Card Visual Editor](images/fanpy-card-visual-editor.png)
+
     ![Fanpy-Card Editor](images/fanpy-card-editor.png)
 
 ## Development
