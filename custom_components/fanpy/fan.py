@@ -134,6 +134,8 @@ class FanpyFanEntity(FanEntity, RestoreEntity):
                 )
 
     async def async_turn_off(self, **kwargs):
+        if not self._attr_is_on:
+            return
         self._last_percentage = self._attr_percentage
         self._attr_is_on = False
         self._attr_percentage = 0
