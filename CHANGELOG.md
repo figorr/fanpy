@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/figorr/fanpy/compare/v3.0.0...v3.0.1) (2026-07-07)
+
+
+### Bug Fixes
+
+* set guard for fan timers ([59393b7](https://github.com/figorr/fanpy/commit/59393b7b0cea69a52b08f8b20ed98d564f96cc70))
+
 # [3.0.0](https://github.com/figorr/fanpy/compare/v2.0.3...v3.0.0) (2026-07-07)
 
 
