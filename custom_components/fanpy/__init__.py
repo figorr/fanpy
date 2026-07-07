@@ -11,7 +11,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = "fanpy"
 
-PLATFORMS = ["binary_sensor", "switch", "select"]
+PLATFORMS = ["select", "fan", "light"]
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
@@ -172,7 +172,7 @@ def _build_scripts_yaml(
             return f"      entity_id: {broadlink_entity_id}"
         return "      entity_id: YOUR_BROADLINK_ENTITY_ID"
 
-    def _append_script(action_name, display_name, command, extra_actions=None):
+    def _append_script(action_name, display_name, command):
         lines.append(f"{prefix}_{action_name}:")
         lines.append("  sequence:")
         lines.append("  - action: remote.send_command")
@@ -185,40 +185,21 @@ def _build_scripts_yaml(
         lines.append(f"      command: '{command}'")
         lines.append("    target:")
         lines.append(_target_block())
-        if extra_actions:
-            for service, entity_id, data in extra_actions:
-                lines.append("  - action: " + service)
-                lines.append("    metadata: {}")
-                lines.append("    target:")
-                lines.append(f"      entity_id: {entity_id}")
-                if data:
-                    lines.append("    data:")
-                    for k, v in data.items():
-                        lines.append(f"      {k}: {v}")
-                else:
-                    lines.append("    data: {}")
         lines.append(f"  alias: \"{display_name}\"")
         lines.append("  description: ''")
         lines.append("")
-
-    def _entity_action(service, entity_id, data=None):
-        return (service, entity_id, data)
 
     lines.append(f"# Prefix: {prefix}")
     lines.append(f"# Name: {name}")
     lines.append(f"# Device ID: {broadlink_device_id}")
     lines.append("")
 
-    _append_script("power_on", f"{name} Power ON", cmd_on,
-        [_entity_action("switch.turn_on", f"switch.{CONF_ENTITY_PREFIX}_{prefix}_power")])
-    _append_script("power_off", f"{name} Power OFF", cmd_off,
-        [_entity_action("switch.turn_off", f"switch.{CONF_ENTITY_PREFIX}_{prefix}_power")])
+    _append_script("power_on", f"{name} Power ON", cmd_on)
+    _append_script("power_off", f"{name} Power OFF", cmd_off)
 
     if has_light:
-        _append_script("luz_on", f"{name} Luz ON", cmd_luz,
-            [_entity_action("switch.turn_on", f"switch.{CONF_ENTITY_PREFIX}_{prefix}_luz")])
-        _append_script("luz_off", f"{name} Luz OFF", cmd_luz,
-            [_entity_action("switch.turn_off", f"switch.{CONF_ENTITY_PREFIX}_{prefix}_luz")])
+        _append_script("luz_on", f"{name} Luz ON", cmd_luz)
+        _append_script("luz_off", f"{name} Luz OFF", cmd_luz)
 
         if has_temp:
             _append_script("luz_calida", f"{name} Luz Cálida", cmd_luz_calida)
@@ -231,9 +212,7 @@ def _build_scripts_yaml(
     if num_speeds > 1:
         for i in range(1, num_speeds + 1):
             cmd = velocidad_commands.get(i, f"velocidad{i}")
-            _append_script(f"velocidad_{i}", f"{name} Velocidad {i}", cmd,
-                [_entity_action("select.select_option", f"select.{CONF_ENTITY_PREFIX}_{prefix}_velocidad", {"option": str(i)}),
-                 _entity_action("switch.turn_on", f"switch.{CONF_ENTITY_PREFIX}_{prefix}_power")])
+            _append_script(f"velocidad_{i}", f"{name} Velocidad {i}", cmd)
 
     return "\n".join(lines)
 

@@ -1,6 +1,6 @@
 import logging
 
-from homeassistant.components.switch import SwitchEntity
+from homeassistant.components.light import LightEntity, ColorMode
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -23,49 +23,12 @@ async def async_setup_entry(
     prefix = entry.data.get(CONF_PREFIX, "ventilador")
     name = entry.data.get(CONF_NAME, prefix)
 
-    hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN].setdefault("switches", {})
-
     async_add_entities([
-        FanPowerSwitch(hass, entry, prefix, name),
-        FanLightSwitch(hass, entry, prefix, name),
+        FanpyLightEntity(hass, entry, prefix, name),
     ])
 
 
-class FanPowerSwitch(SwitchEntity, RestoreEntity):
-
-    _attr_icon = "mdi:fan"
-
-    def __init__(self, hass: HomeAssistant, entry: ConfigEntry, prefix: str, name: str) -> None:
-        self._hass = hass
-        self._entry = entry
-        self._prefix = prefix
-        self._attr_name = f"Fanpy {name} Power"
-        self._attr_unique_id = f"{CONF_ENTITY_PREFIX}_{prefix}_power"
-
-    async def async_added_to_hass(self) -> None:
-        await super().async_added_to_hass()
-        state = await self.async_get_last_state()
-        self._attr_is_on = state is not None and state.state == "on"
-
-    async def async_turn_on(self, **kwargs) -> None:
-        self._attr_is_on = True
-        self.async_write_ha_state()
-        await self._hass.services.async_call(
-            "script", f"{self._prefix}_power_on", {}, blocking=True
-        )
-
-    async def async_turn_off(self, **kwargs) -> None:
-        self._attr_is_on = False
-        self.async_write_ha_state()
-        await self._hass.services.async_call(
-            "script", f"{self._prefix}_power_off", {}, blocking=True
-        )
-
-
-class FanLightSwitch(SwitchEntity, RestoreEntity):
-
-    _attr_icon = "mdi:lightbulb"
+class FanpyLightEntity(LightEntity, RestoreEntity):
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, prefix: str, name: str) -> None:
         self._hass = hass
@@ -73,11 +36,16 @@ class FanLightSwitch(SwitchEntity, RestoreEntity):
         self._prefix = prefix
         self._attr_name = f"Fanpy {name} Luz"
         self._attr_unique_id = f"{CONF_ENTITY_PREFIX}_{prefix}_luz"
+        self._attr_supported_color_modes = {ColorMode.ONOFF}
+        self._attr_color_mode = ColorMode.ONOFF
+        self._attr_is_on = False
 
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
-        state = await self.async_get_last_state()
-        self._attr_is_on = state is not None and state.state == "on"
+        last_state = await self.async_get_last_state()
+        if last_state is not None:
+            self._attr_is_on = last_state.state == "on"
+        self.async_write_ha_state()
 
     async def async_turn_on(self, **kwargs) -> None:
         self._attr_is_on = True

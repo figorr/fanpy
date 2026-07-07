@@ -48,17 +48,6 @@ class FanSpeedSelect(SelectEntity):
         self._attr_current_option = option
         self.async_write_ha_state()
 
-        await self._hass.services.async_call(
-            "script", f"{self._prefix}_velocidad_{option}", {}, blocking=True
-        )
-
-        power_switch = f"switch.{CONF_ENTITY_PREFIX}_{self._prefix}_power"
-        power_state = self._hass.states.get(power_switch)
-        if power_state is None or power_state.state == "off":
-            await self._hass.services.async_call(
-                "switch", "turn_on", {"entity_id": power_switch}, blocking=True
-            )
-
 
 class FanpyTimerCountSelect(SelectEntity):
 

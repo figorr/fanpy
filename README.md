@@ -19,9 +19,10 @@ Fanpy is the **backend companion** for the Fanpy Card. While the card provides t
 
 - ✅ **Multi-step setup wizard** — area selection, mode choice, light/features toggles, Broadlink configuration
 - ✅ **Two integration modes**: Remote (Broadlink RF scripts) and Direct (native `switch.*` / `light.*` entities)
-- ✅ **Automatic entity creation**: `switch.*` (power, light), `select.*` (speed), `binary_sensor.*` (state for card)
-- ✅ **YAML generation** — generates `scripts.yaml` (RF commands) ready to `!include`
-- ✅ **Timer support** — configurable number of timer buttons (0–3), exposed via a `select.fanpy_<prefix>_num_timers` entity that the card reads at runtime. Timer entities are created manually with the native HA timer helper; the card calls `timer.start`/`timer.cancel` natively.
+- ✅ **Automatic entity creation** (Remote): `fan.*` (power + speed), `light.*` (light), `select.*` (speed selector + timer count)
+- ✅ **Automatic entity creation** (Direct): `select.*` only (speed selector + timer count) — fan/light entities managed externally
+- ✅ **State persistence** — entities restore their last state after HA restart (power, speed, light)
+- ✅ **Timer support** — configurable number of timer buttons (0–3), exposed via a `select.fanpy_<prefix>_num_timers` entity that the card reads at runtime. Timer entities are created manually with the native HA timer helper; the fan entity cancels active timers automatically when the fan turns off.
 - ✅ **Multi-language support**: English, Spanish, Catalan
 - ✅ **HACS compatible**
 
@@ -29,8 +30,8 @@ Fanpy is the **backend companion** for the Fanpy Card. While the card provides t
 
 | Mode | Description | Integration | Card entity selection | Card service calls |
 |------|-------------|-------------|----------------------|-------------------|
-| **Fanpy Remote** | Fanpy entities (`switch.fanpy_*`, `select.fanpy_*`) + Broadlink RF scripts | Creates all entities + scripts | Auto by prefix (`fanpy_ventilador_{area}_*`) | Calls `script.{prefix}_*` for power/light/speed |
-| **Fanpy Direct** | Fanpy speed select (`select.fanpy_*_velocidad`) + user's own `switch.*` / `light.*` (Shelly) | Creates only `select.fanpy_*_velocidad` and `binary_sensor.fanpy_*` | Manual (`entity_fan`, `entity_light`) | Calls `switch.turn_on/off`, `light.turn_on/off` directly; speed via `script.{prefix}_*` |
+| **Fanpy Remote** | Fanpy entities (`fan.fanpy_*`, `light.fanpy_*`, `select.fanpy_*`) + Broadlink RF scripts | Creates fan, light, select entities | Auto by prefix (`fanpy_ventilador_{area}_*`) | Calls `fan.turn_on/off`, `fan.set_percentage`, `light.turn_on/off` natively; speed via `fan.set_percentage` |
+| **Fanpy Direct** | Fanpy speed select (`select.fanpy_*_velocidad`) + user's own `switch.*` / `light.*` (Shelly) | Creates only `select.fanpy_*_velocidad` | Manual (`entity_fan`, `entity_light`) | Calls `switch.turn_on/off`, `light.turn_on/off` directly; speed via scripts |
 
 The card also supports two manual modes (Helpers and Direct) that don't require the Fanpy integration — see the [card documentation](https://github.com/figorr/fanpy-card) for details.
 
@@ -80,7 +81,7 @@ Install using HACS before the integration is added to the default HACS repositor
 - **Step 6 — Timer**: Select the number of timers (0–3). The card will show that many timer buttons and call native `timer.start`/`timer.cancel` on the timer entities you create manually with the HA timer helper.
 - **Step 7 — Broadlink & Commands**: Select the Broadlink `remote.*` entity, set the remote device name, and configure all RF commands (power, light, temperature, intensity, speed levels)
 
-This mode creates `switch.fanpy_*`, `select.fanpy_*`, `binary_sensor.fanpy_*` plus all RF scripts. Use the card in **Fanpy Remote** mode.
+This mode creates `fan.fanpy_*`, `light.fanpy_*`, `select.fanpy_*` entities. You provide the RF scripts in your `scripts.yaml` (just the `remote.send_command` action — no entity updates). Use the card in **Fanpy Remote** mode.
 
 ### Fanpy Direct (Shelly switch.* / light.*)
 
@@ -92,7 +93,7 @@ This mode creates `switch.fanpy_*`, `select.fanpy_*`, `binary_sensor.fanpy_*` pl
 - **Step 6 — Light Features** (if has light): Toggle color temperature and brightness controls
 - **Step 7 — Timer**: Select the number of timers (0–3). The card will show that many timer buttons and call native `timer.start`/`timer.cancel` on the timer entities you create manually with the HA timer helper.
 
-This mode creates only `select.fanpy_*_velocidad` and `binary_sensor.fanpy_*`. The card reads your Shelly entities directly. Use the card in **Fanpy Direct** mode.
+This mode creates only `select.fanpy_*_velocidad`. The card reads your Shelly entities directly. Use the card in **Fanpy Direct** mode.
 
 ### Card Configuration
 
@@ -117,47 +118,22 @@ entity_light: light.shelly_rgb_1
 has_light: true
 ```
 
-### Generated Files
+### Required Scripts
 
-After setup, the integration generates a YAML file inside:
-```
-custom_components/fanpy/generated/
-```
+The integration **does not** generate scripts automatically. You must create the RF scripts manually in your `scripts.yaml`. Each script only needs the `remote.send_command` action — entity state updates are handled by the integration's Python code.
 
-This file must be included in your HA configuration to activate the scripts.
-
-### Option A: `!include` (Recommended)
-
-Add this line to your `configuration.yaml`:
+Make sure your `configuration.yaml` includes your scripts:
 
 ```yaml
-script: !include custom_components/fanpy/generated/scripts.yaml
+script: !include scripts.yaml
 ```
 
-Then restart HA or call `script.reload`. The file updates automatically when you add/remove fans — no manual copying needed.
-
-### Option B: Manual copy
-
-If you prefer to manage scripts yourself:
-
-1. Open `custom_components/fanpy/generated/scripts.yaml` and copy its content into your own `scripts.yaml`.
-2. Make sure your `configuration.yaml` references it:
-   ```yaml
-   script: !include scripts.yaml
-   ```
-3. Restart HA or call `script.reload`.
-
-> **Note:** With manual copy you must repeat the copy every time you change the fan configuration.
-
-### About the generated scripts
-
-For **Remote mode**, each script sends an RF command via Broadlink and updates the Fanpy entities so the card reflects the correct state:
+Example `scripts.yaml` for a fan with 6 speeds and light:
 
 ```yaml
 ventilador_salon_power_on:
   sequence:
   - action: remote.send_command
-    metadata: {}
     data:
       num_repeats: 1
       delay_secs: 0.4
@@ -165,23 +141,55 @@ ventilador_salon_power_on:
       device: ventilador_salon
       command: 'on'
     target:
-      device_id: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
-  - action: switch.turn_on
-    metadata: {}
-    target:
-      entity_id: switch.fanpy_ventilador_salon_power
-    data: {}
+      device_id: YOUR_BROADLINK_DEVICE_ID
   alias: "Ventilador Salón Power ON"
   description: ''
-```
 
-Speed scripts also update the speed selector and ensure power is on:
+ventilador_salon_power_off:
+  sequence:
+  - action: remote.send_command
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: ventilador_salon
+      command: 'off'
+    target:
+      device_id: YOUR_BROADLINK_DEVICE_ID
+  alias: "Ventilador Salón Power OFF"
+  description: ''
 
-```yaml
+ventilador_salon_luz_on:
+  sequence:
+  - action: remote.send_command
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: ventilador_salon
+      command: luz
+    target:
+      device_id: YOUR_BROADLINK_DEVICE_ID
+  alias: "Ventilador Salón Luz ON"
+  description: ''
+
+ventilador_salon_luz_off:
+  sequence:
+  - action: remote.send_command
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: ventilador_salon
+      command: luz
+    target:
+      device_id: YOUR_BROADLINK_DEVICE_ID
+  alias: "Ventilador Salón Luz OFF"
+  description: ''
+
 ventilador_salon_velocidad_1:
   sequence:
   - action: remote.send_command
-    metadata: {}
     data:
       num_repeats: 1
       delay_secs: 0.4
@@ -189,23 +197,58 @@ ventilador_salon_velocidad_1:
       device: ventilador_salon
       command: 'velocidad1'
     target:
-      device_id: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
-  - action: select.select_option
-    metadata: {}
-    target:
-      entity_id: select.fanpy_ventilador_salon_velocidad
-    data:
-      option: '1'
-  - action: switch.turn_on
-    metadata: {}
-    target:
-      entity_id: switch.fanpy_ventilador_salon_power
-    data: {}
+      device_id: YOUR_BROADLINK_DEVICE_ID
   alias: "Ventilador Salón Velocidad 1"
+  description: ''
+
+ventilador_salon_velocidad_2:
+  sequence:
+  - action: remote.send_command
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: ventilador_salon
+      command: 'velocidad2'
+    target:
+      device_id: YOUR_BROADLINK_DEVICE_ID
+  alias: "Ventilador Salón Velocidad 2"
   description: ''
 ```
 
-> The `device_id` is automatically resolved from the Broadlink remote entity you selected during setup. No manual configuration needed.
+> Scripts for speeds 3–6 follow the same pattern (`velocidad3` through `velocidad6`). Scripts for light temperature and intensity follow the same pattern with commands `luz_fria`, `luz_calida`, `intensidad_alta`, `intensidad_baja`.
+
+> **Why no entity updates in scripts?** The integration's `fan` and `light` entities update HA state directly in Python. The scripts only send the RF command. This makes scripts simpler and state management more reliable.
+
+### How the flow works
+
+When you press a button in the Fanpy Card:
+
+#### Fanpy Remote mode
+
+```
+Card → fan.set_percentage (service)
+        → FanpyFanEntity updates HA state (is_on, percentage)
+        → Calls script.{prefix}_velocidad_{n} (RF only)
+        → Updates select.fanpy_{prefix}_velocidad to match
+```
+
+```
+Card → fan.turn_off (service)
+        → FanpyFanEntity saves last speed, sets is_on=false
+        → Cancels active timers (Python)
+        → Calls script.{prefix}_power_off (RF only)
+```
+
+#### Fanpy Direct mode
+
+```
+Card → switch.turn_on/off (service, power)
+Card → light.turn_on/off (service, light)
+Card → script.{prefix}_velocidad_{n} (speed, RF only)
+```
+
+The card calls `switch.*` / `light.*` entities directly. Speed scripts send the RF command — no entity updates are needed in scripts since the integration manages speed state via `select.fanpy_{prefix}_velocidad`.
 
 Make sure the command names match what you learned with `remote.learn_command`. You can test them with `remote.send_command`.
 
@@ -217,11 +260,17 @@ Make sure the command names match what you learned with `remote.learn_command`. 
 
   ![Broadlink Remote Send Command](images/broadlink_remote_send_command.png)
 
-### Entity Naming
+### Entity Naming (Fanpy Remote mode)
 
 Each entity is created with:
-- **Friendly name**: `Fanpy Ventilador {Area} Power` (you can edit the "Fanpy" prefix off later in Settings → Entities)
-- **Entity ID**: `switch.fanpy_ventilador_{area}_power` — the `fanpy_` prefix lets the card find related entities automatically
+- **Friendly names**: `Fanpy {Name}`, `Fanpy {Name} Luz`, `Fanpy {Name} Velocidad`
+- **Entity IDs**:
+  - `fan.fanpy_{prefix}` — fan power and speed (state: on/off, percentage)
+  - `light.fanpy_{prefix}_luz` — light power (state: on/off)
+  - `select.fanpy_{prefix}_velocidad` — speed selector (options: 1–N)
+  - `select.fanpy_{prefix}_num_timers` — number of timer buttons (set via config flow)
+
+The `fanpy_` prefix lets the card find related entities automatically.
 
 ## Reconfiguration
 
@@ -233,7 +282,7 @@ To change settings after initial setup:
 ## Requirements
 
 - Home Assistant 2025.12.5 or newer
-- [Fanpy Card](https://github.com/figorr/fanpy-card) (for the Lovelace UI)
+- [Fanpy Card](https://github.com/figorr/fanpy-card) v3.0.0 or newer (for the Lovelace UI)
   - **The card**
 
     ![Fanpy-Card](images/fanpy-card.png)
