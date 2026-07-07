@@ -1,3 +1,15 @@
+# [3.0.0](https://github.com/figorr/fanpy/compare/v2.0.3...v3.0.0) (2026-07-07)
+
+
+### Features
+
+* New Fanpy structure for Remotes modes ([2293aff](https://github.com/figorr/fanpy/commit/2293aff6e0bf37a4b642d6a87681518cd5f1dd06))
+
+
+### BREAKING CHANGES
+
+* New fan and light entities for Remotes modes
+
 ## [2.0.3](https://github.com/figorr/fanpy/compare/v2.0.2...v2.0.3) (2026-07-05)
 
 
