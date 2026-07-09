@@ -1,3 +1,11 @@
+## [3.0.2](https://github.com/figorr/fanpy/compare/v3.0.1...v3.0.2) (2026-07-09)
+
+
+### Bug Fixes
+
+* add extra attributes for direct mode ([3e44fa9](https://github.com/figorr/fanpy/commit/3e44fa90db8d2e0f545d94da08a8566dde8c0c68))
+* fix timer listener ([79b8a36](https://github.com/figorr/fanpy/commit/79b8a3610a2b3b787c5fc001ce137915f863f067))
+
 ## [3.0.1](https://github.com/figorr/fanpy/compare/v3.0.0...v3.0.1) (2026-07-07)
 
 
