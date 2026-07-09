@@ -44,6 +44,19 @@ class FanSpeedSelect(SelectEntity):
         self._attr_options = [str(i) for i in range(1, num_speeds + 1)]
         self._attr_current_option = self._attr_options[0]
 
+    @property
+    def extra_state_attributes(self):
+        attrs = {
+            "fanpy_mode": self._entry.data.get(CONF_MODE, CONF_MODE_REMOTE),
+        }
+        mode = self._entry.data.get(CONF_MODE, CONF_MODE_REMOTE)
+        if mode == CONF_MODE_DIRECT:
+            attrs["entity_fan"] = self._entry.data.get(CONF_ENTITY_FAN, "")
+            entity_light = self._entry.data.get(CONF_ENTITY_LIGHT, "")
+            if entity_light:
+                attrs["entity_light"] = entity_light
+        return attrs
+
     async def async_select_option(self, option: str) -> None:
         self._attr_current_option = option
         self.async_write_ha_state()
