@@ -26,10 +26,32 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     await _generate_scripts_yaml(hass, entry)
 
+    mode = entry.data.get(CONF_MODE, CONF_MODE_REMOTE)
+    if mode == CONF_MODE_DIRECT:
+        entity_fan = entry.data.get(CONF_ENTITY_FAN, "")
+        prefix = entry.data.get(CONF_PREFIX, "ventilador")
+        if entity_fan:
+
+            async def _direct_timer_finished(event):
+                entity_id = event.data.get("entity_id", "")
+                if prefix in entity_id:
+                    await hass.services.async_call(
+                        "switch", "turn_off", {"entity_id": entity_fan}, blocking=True
+                    )
+
+            remove_listener = hass.bus.async_listen(
+                "timer.finished", _direct_timer_finished
+            )
+            hass.data[DOMAIN][entry.entry_id]["timer_listener"] = remove_listener
+
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    remove_listener = hass.data[DOMAIN].get(entry.entry_id, {}).get("timer_listener")
+    if remove_listener:
+        remove_listener()
+
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id, None)
