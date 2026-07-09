@@ -78,6 +78,14 @@ class FanpyFanEntity(FanEntity, RestoreEntity):
         self.async_on_remove(
             self.hass.bus.async_listen("state_changed", self._handle_speed_change)
         )
+        self.async_on_remove(
+            self.hass.bus.async_listen("timer.finished", self._handle_timer_finished)
+        )
+
+    async def _handle_timer_finished(self, event) -> None:
+        entity_id = event.data.get("entity_id", "")
+        if self._prefix in entity_id:
+            await self.async_turn_off()
 
     async def _handle_speed_change(self, event) -> None:
         speed_select = f"select.{CONF_ENTITY_PREFIX}_{self._prefix}_velocidad"
