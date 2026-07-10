@@ -123,7 +123,8 @@ def _build_schemas(
         }
         if data.get(CONF_HAS_LIGHT, False):
             schema.update({
-                vol.Required(CONF_COMMAND_LUZ, default=data.get(CONF_COMMAND_LUZ, DEFAULT_COMMAND_LUZ)): selector.TextSelector(),
+                vol.Required(CONF_COMMAND_LUZ_ON, default=data.get(CONF_COMMAND_LUZ_ON, data.get(CONF_COMMAND_LUZ, DEFAULT_COMMAND_LUZ_ON))): selector.TextSelector(),
+                vol.Required(CONF_COMMAND_LUZ_OFF, default=data.get(CONF_COMMAND_LUZ_OFF, data.get(CONF_COMMAND_LUZ, DEFAULT_COMMAND_LUZ_OFF))): selector.TextSelector(),
             })
             if data.get(CONF_HAS_LIGHT_TEMPERATURE, False):
                 schema.update({

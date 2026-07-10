@@ -133,7 +133,8 @@ async def _generate_scripts_yaml(hass: HomeAssistant, entry: ConfigEntry) -> Non
 
                 cmd_on = d.get(CONF_COMMAND_ON, DEFAULT_COMMAND_ON)
                 cmd_off = d.get(CONF_COMMAND_OFF, DEFAULT_COMMAND_OFF)
-                cmd_luz = d.get(CONF_COMMAND_LUZ, DEFAULT_COMMAND_LUZ)
+                cmd_luz_on = d.get(CONF_COMMAND_LUZ_ON, d.get(CONF_COMMAND_LUZ, DEFAULT_COMMAND_LUZ_ON))
+                cmd_luz_off = d.get(CONF_COMMAND_LUZ_OFF, d.get(CONF_COMMAND_LUZ, DEFAULT_COMMAND_LUZ_OFF))
                 cmd_luz_calida = d.get(CONF_COMMAND_LUZ_CALIDA, DEFAULT_COMMAND_LUZ_CALIDA)
                 cmd_luz_fria = d.get(CONF_COMMAND_LUZ_FRIA, DEFAULT_COMMAND_LUZ_FRIA)
                 cmd_int_alta = d.get(CONF_COMMAND_INTENSIDAD_ALTA, DEFAULT_COMMAND_INTENSIDAD_ALTA)
@@ -149,7 +150,7 @@ async def _generate_scripts_yaml(hass: HomeAssistant, entry: ConfigEntry) -> Non
                     d.get(CONF_HAS_LIGHT_TEMPERATURE, False),
                     d.get(CONF_HAS_LIGHT_INTENSITY, False),
                     bd_id, be_id, rd,
-                    cmd_on, cmd_off, cmd_luz, cmd_luz_calida, cmd_luz_fria,
+                    cmd_on, cmd_off, cmd_luz_on, cmd_luz_off, cmd_luz_calida, cmd_luz_fria,
                     cmd_int_alta, cmd_int_baja, vcmd,
                     resolved_device_id=resolved_dev_id,
                 )
@@ -177,7 +178,8 @@ def _build_scripts_yaml(
     prefix: str, name: str, num_speeds: int,
     has_light: bool, has_temp: bool, has_intensity: bool,
     broadlink_device_id: str, broadlink_entity_id: str, remote_device: str,
-    cmd_on: str, cmd_off: str, cmd_luz: str,
+    cmd_on: str, cmd_off: str,
+    cmd_luz_on: str, cmd_luz_off: str,
     cmd_luz_calida: str, cmd_luz_fria: str,
     cmd_int_alta: str, cmd_int_baja: str,
     velocidad_commands: dict,
@@ -220,8 +222,8 @@ def _build_scripts_yaml(
     _append_script("power_off", f"{name} Power OFF", cmd_off)
 
     if has_light:
-        _append_script("luz_on", f"{name} Luz ON", cmd_luz)
-        _append_script("luz_off", f"{name} Luz OFF", cmd_luz)
+        _append_script("luz_on", f"{name} Luz ON", cmd_luz_on)
+        _append_script("luz_off", f"{name} Luz OFF", cmd_luz_off)
 
         if has_temp:
             _append_script("luz_calida", f"{name} Luz Cálida", cmd_luz_calida)
