@@ -1,3 +1,10 @@
+## [3.0.3](https://github.com/figorr/fanpy/compare/v3.0.2...v3.0.3) (2026-07-10)
+
+
+### Bug Fixes
+
+* light on/off commands ([7934d43](https://github.com/figorr/fanpy/commit/7934d4355e0ad71befe95940849aecb00827ad00))
+
 ## [3.0.2](https://github.com/figorr/fanpy/compare/v3.0.1...v3.0.2) (2026-07-09)
 
 
