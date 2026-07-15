@@ -112,11 +112,17 @@ class FanpyFanEntity(FanEntity, RestoreEntity):
 
     async def async_turn_on(self, percentage=None, preset_mode=None, **kwargs):
         if percentage is None:
-            self._attr_percentage = self._last_percentage
+            level = self._level_from_percentage(self._last_percentage) or 1
+            self._attr_percentage = self._percentage_for_level(level)
+            self._last_percentage = self._attr_percentage
             self._attr_is_on = True
             self.async_write_ha_state()
             await self._hass.services.async_call(
-                "script", f"{self._prefix}_power_on", {}, blocking=True
+                "script", f"{self._prefix}_velocidad_{level}", {}, blocking=True
+            )
+            speed_select = f"select.{CONF_ENTITY_PREFIX}_{self._prefix}_velocidad"
+            await self._hass.services.async_call(
+                "select", "select_option", {"entity_id": speed_select, "option": str(level)}, blocking=True
             )
         else:
             level = self._level_from_percentage(percentage)
