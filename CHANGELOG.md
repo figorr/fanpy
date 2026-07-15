@@ -1,3 +1,10 @@
+## [3.0.4](https://github.com/figorr/fanpy/compare/v3.0.3...v3.0.4) (2026-07-15)
+
+
+### Bug Fixes
+
+* fix last_percentage power on ([d909e6b](https://github.com/figorr/fanpy/commit/d909e6bb148b827f8d7a044704b4c3f2e38cd008))
+
 ## [3.0.3](https://github.com/figorr/fanpy/compare/v3.0.2...v3.0.3) (2026-07-10)
 
 
