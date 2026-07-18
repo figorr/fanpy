@@ -1,3 +1,10 @@
+## [3.0.5](https://github.com/figorr/fanpy/compare/v3.0.4...v3.0.5) (2026-07-18)
+
+
+### Bug Fixes
+
+* fix handle speed change at restart ([7467619](https://github.com/figorr/fanpy/commit/7467619e53350bbe4feabc715fbe3e222c734d76))
+
 ## [3.0.4](https://github.com/figorr/fanpy/compare/v3.0.3...v3.0.4) (2026-07-15)
 
 
