@@ -74,13 +74,23 @@ class FanpyFanEntity(FanEntity, RestoreEntity):
         if not self._last_percentage:
             self._last_percentage = self._percentage_for_level(1)
 
-        self.async_write_ha_state()
         self.async_on_remove(
             self.hass.bus.async_listen("state_changed", self._handle_speed_change)
         )
         self.async_on_remove(
             self.hass.bus.async_listen("timer.finished", self._handle_timer_finished)
         )
+
+        self.async_write_ha_state()
+
+        if self._attr_is_on and self._attr_percentage > 0:
+            level = self._level_from_percentage(self._attr_percentage)
+            speed_select = f"select.{CONF_ENTITY_PREFIX}_{self._prefix}_velocidad"
+            await self.hass.services.async_call(
+                "select", "select_option",
+                {"entity_id": speed_select, "option": str(level)},
+                blocking=True
+            )
 
     async def _handle_timer_finished(self, event) -> None:
         entity_id = event.data.get("entity_id", "")
@@ -96,8 +106,11 @@ class FanpyFanEntity(FanEntity, RestoreEntity):
             try:
                 level = int(new_state.state)
                 percentage = self._percentage_for_level(level)
+                if percentage == self._attr_percentage:
+                    return
                 self._attr_percentage = percentage
-                self._last_percentage = percentage
+                if percentage > 0:
+                    self._last_percentage = percentage
                 self.async_write_ha_state()
             except (ValueError, TypeError):
                 pass
@@ -113,30 +126,22 @@ class FanpyFanEntity(FanEntity, RestoreEntity):
     async def async_turn_on(self, percentage=None, preset_mode=None, **kwargs):
         if percentage is None:
             level = self._level_from_percentage(self._last_percentage) or 1
-            self._attr_percentage = self._percentage_for_level(level)
-            self._last_percentage = self._attr_percentage
-            self._attr_is_on = True
-            self.async_write_ha_state()
-            await self._hass.services.async_call(
-                "script", f"{self._prefix}_velocidad_{level}", {}, blocking=True
-            )
-            speed_select = f"select.{CONF_ENTITY_PREFIX}_{self._prefix}_velocidad"
-            await self._hass.services.async_call(
-                "select", "select_option", {"entity_id": speed_select, "option": str(level)}, blocking=True
-            )
+            percentage = self._percentage_for_level(level)
         else:
             level = self._level_from_percentage(percentage)
-            self._last_percentage = percentage
-            self._attr_percentage = percentage
-            self._attr_is_on = True
-            self.async_write_ha_state()
-            await self._hass.services.async_call(
-                "script", f"{self._prefix}_velocidad_{level}", {}, blocking=True
-            )
-            speed_select = f"select.{CONF_ENTITY_PREFIX}_{self._prefix}_velocidad"
-            await self._hass.services.async_call(
-                "select", "select_option", {"entity_id": speed_select, "option": str(level)}, blocking=True
-            )
+
+        self._last_percentage = percentage
+        self._attr_percentage = percentage
+        self._attr_is_on = True
+        self.async_write_ha_state()
+
+        await self._hass.services.async_call(
+            "script", f"{self._prefix}_velocidad_{level}", {}, blocking=True
+        )
+        speed_select = f"select.{CONF_ENTITY_PREFIX}_{self._prefix}_velocidad"
+        await self._hass.services.async_call(
+            "select", "select_option", {"entity_id": speed_select, "option": str(level)}, blocking=True
+        )
 
     async def _cancel_active_timers(self) -> None:
         for state_obj in self.hass.states.async_all():
@@ -160,22 +165,20 @@ class FanpyFanEntity(FanEntity, RestoreEntity):
         )
 
     async def async_set_percentage(self, percentage: int):
+        if percentage == 0:
+            await self.async_turn_off()
+            return
+
         level = self._level_from_percentage(percentage)
-        if level > 0:
-            self._last_percentage = percentage
+        self._last_percentage = percentage
         self._attr_percentage = percentage
-        self._attr_is_on = level > 0
+        self._attr_is_on = True
         self.async_write_ha_state()
+
+        await self._hass.services.async_call(
+            "script", f"{self._prefix}_velocidad_{level}", {}, blocking=True
+        )
         speed_select = f"select.{CONF_ENTITY_PREFIX}_{self._prefix}_velocidad"
-        if level > 0:
-            await self._hass.services.async_call(
-                "script", f"{self._prefix}_velocidad_{level}", {}, blocking=True
-            )
-            await self._hass.services.async_call(
-                "select", "select_option", {"entity_id": speed_select, "option": str(level)}, blocking=True
-            )
-        else:
-            await self._cancel_active_timers()
-            await self._hass.services.async_call(
-                "script", f"{self._prefix}_power_off", {}, blocking=True
-            )
+        await self._hass.services.async_call(
+            "select", "select_option", {"entity_id": speed_select, "option": str(level)}, blocking=True
+        )
