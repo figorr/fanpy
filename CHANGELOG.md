@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/figorr/fanpy/compare/v3.0.5...v3.1.0) (2026-08-19)
+
+
+### Features
+
+* add options flow to reconfigure light features and remote commands ([1f93c90](https://github.com/figorr/fanpy/commit/1f93c90b68d1816d12f6b15b68e004d2a9896fa1))
+
 ## [3.0.5](https://github.com/figorr/fanpy/compare/v3.0.4...v3.0.5) (2026-07-18)
 
 
