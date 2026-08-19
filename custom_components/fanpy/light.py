@@ -42,6 +42,7 @@ class FanpyLightEntity(LightEntity, RestoreEntity):
 
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
+        self.hass.data.setdefault(DOMAIN, {}).setdefault(self._entry.entry_id, {})["light_entity"] = self
         last_state = await self.async_get_last_state()
         if last_state is not None:
             self._attr_is_on = last_state.state == "on"

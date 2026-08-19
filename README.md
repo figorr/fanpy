@@ -22,7 +22,7 @@ Fanpy is the **backend companion** for the Fanpy Card. While the card provides t
 - ✅ **Automatic entity creation** (Remote): `fan.*` (power + speed), `light.*` (light), `select.*` (speed selector + timer count)
 - ✅ **Automatic entity creation** (Direct): `select.*` only (speed selector + timer count) — fan/light entities managed externally
 - ✅ **State persistence** — entities restore their last state after HA restart (power, speed, light)
-- ✅ **Timer support** — configurable number of timer buttons (0–3), exposed via a `select.fanpy_<prefix>_num_timers` entity that the card reads at runtime. Timer entities are created manually with the native HA timer helper; the fan entity cancels active timers automatically when the fan turns off.
+- ✅ **Timer support** — configurable number of timer buttons (0–3), exposed via a `select.fanpy_<prefix>_num_timers` entity that the card reads at runtime. Timer entities are created manually with the native HA timer helper; the fan entity cancels active timers automatically when the fan turns off. Timer entities entitiy_id should look like `timer.ventilador_{area}_*`.
 - ✅ **Multi-language support**: English, Spanish, Catalan
 - ✅ **HACS compatible**
 

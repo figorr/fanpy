@@ -11,7 +11,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = "fanpy"
 
-PLATFORMS = ["select", "fan", "light"]
+PLATFORMS = ["select", "fan", "light", "button"]
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
@@ -136,6 +136,7 @@ async def _generate_scripts_yaml(hass: HomeAssistant, entry: ConfigEntry) -> Non
                 cmd_luz_on = d.get(CONF_COMMAND_LUZ_ON, d.get(CONF_COMMAND_LUZ, DEFAULT_COMMAND_LUZ_ON))
                 cmd_luz_off = d.get(CONF_COMMAND_LUZ_OFF, d.get(CONF_COMMAND_LUZ, DEFAULT_COMMAND_LUZ_OFF))
                 cmd_luz_calida = d.get(CONF_COMMAND_LUZ_CALIDA, DEFAULT_COMMAND_LUZ_CALIDA)
+                cmd_luz_neutra = d.get(CONF_COMMAND_LUZ_NEUTRA, DEFAULT_COMMAND_LUZ_NEUTRA)
                 cmd_luz_fria = d.get(CONF_COMMAND_LUZ_FRIA, DEFAULT_COMMAND_LUZ_FRIA)
                 cmd_int_alta = d.get(CONF_COMMAND_INTENSIDAD_ALTA, DEFAULT_COMMAND_INTENSIDAD_ALTA)
                 cmd_int_baja = d.get(CONF_COMMAND_INTENSIDAD_BAJA, DEFAULT_COMMAND_INTENSIDAD_BAJA)
@@ -149,8 +150,11 @@ async def _generate_scripts_yaml(hass: HomeAssistant, entry: ConfigEntry) -> Non
                     p, n, ns, d.get(CONF_HAS_LIGHT, False),
                     d.get(CONF_HAS_LIGHT_TEMPERATURE, False),
                     d.get(CONF_HAS_LIGHT_INTENSITY, False),
+                    d.get(CONF_HAS_LIGHT_TEMPERATURE_CALIDA, True),
+                    d.get(CONF_HAS_LIGHT_TEMPERATURE_NEUTRA, False),
+                    d.get(CONF_HAS_LIGHT_TEMPERATURE_FRIA, True),
                     bd_id, be_id, rd,
-                    cmd_on, cmd_off, cmd_luz_on, cmd_luz_off, cmd_luz_calida, cmd_luz_fria,
+                    cmd_on, cmd_off, cmd_luz_on, cmd_luz_off, cmd_luz_calida, cmd_luz_neutra, cmd_luz_fria,
                     cmd_int_alta, cmd_int_baja, vcmd,
                     resolved_device_id=resolved_dev_id,
                 )
@@ -177,10 +181,11 @@ async def _generate_scripts_yaml(hass: HomeAssistant, entry: ConfigEntry) -> Non
 def _build_scripts_yaml(
     prefix: str, name: str, num_speeds: int,
     has_light: bool, has_temp: bool, has_intensity: bool,
+    has_temp_calida: bool, has_temp_neutra: bool, has_temp_fria: bool,
     broadlink_device_id: str, broadlink_entity_id: str, remote_device: str,
     cmd_on: str, cmd_off: str,
     cmd_luz_on: str, cmd_luz_off: str,
-    cmd_luz_calida: str, cmd_luz_fria: str,
+    cmd_luz_calida: str, cmd_luz_neutra: str, cmd_luz_fria: str,
     cmd_int_alta: str, cmd_int_baja: str,
     velocidad_commands: dict,
     resolved_device_id: str | None = None,
@@ -226,8 +231,12 @@ def _build_scripts_yaml(
         _append_script("luz_off", f"{name} Luz OFF", cmd_luz_off)
 
         if has_temp:
-            _append_script("luz_calida", f"{name} Luz Cálida", cmd_luz_calida)
-            _append_script("luz_fria", f"{name} Luz Fría", cmd_luz_fria)
+            if has_temp_calida:
+                _append_script("luz_calida", f"{name} Luz Cálida", cmd_luz_calida)
+            if has_temp_neutra:
+                _append_script("luz_neutra", f"{name} Luz Neutra", cmd_luz_neutra)
+            if has_temp_fria:
+                _append_script("luz_fria", f"{name} Luz Fría", cmd_luz_fria)
 
         if has_intensity:
             _append_script("intensidad_alta", f"{name} Intensidad Alta", cmd_int_alta)

@@ -46,6 +46,15 @@
           "has_light_intensity": "Control de intensidad"
         }
       },
+      "direct_light_temp_modes": {
+        "title": "Fanpy — Modos de Temperatura de Luz",
+        "description": "Selecciona qué modos de temperatura de color soporta la luz de este ventilador.",
+        "data": {
+          "has_light_temperature_calida": "Luz cálida",
+          "has_light_temperature_neutra": "Luz neutra",
+          "has_light_temperature_fria": "Luz fría"
+        }
+      },
       "helpers_speeds": {
         "title": "Fanpy — Velocidades",
         "description": "Establece el n\u00famero de velocidades de este ventilador.",
@@ -66,6 +75,15 @@
         "data": {
           "has_light_temperature": "Control de temperatura de color",
           "has_light_intensity": "Control de intensidad"
+        }
+      },
+      "helpers_light_temp_modes": {
+        "title": "Fanpy — Modos de Temperatura de Luz",
+        "description": "Selecciona qué modos de temperatura de color soporta la luz de este ventilador.",
+        "data": {
+          "has_light_temperature_calida": "Luz cálida",
+          "has_light_temperature_neutra": "Luz neutra",
+          "has_light_temperature_fria": "Luz fría"
         }
       },
       "helpers_timer": {
@@ -93,6 +111,7 @@
           "command_luz_on": "Comando luz encender",
           "command_luz_off": "Comando luz apagar",
           "command_luz_calida": "Comando luz c\u00e1lida",
+          "command_luz_neutra": "Comando luz neutra",
           "command_luz_fria": "Comando luz fr\u00eda",
           "command_intensidad_alta": "Comando subir intensidad",
           "command_intensidad_baja": "Comando bajar intensidad",
@@ -117,6 +136,58 @@
     },
     "abort": {
       "already_configured": "Esta \u00e1rea ya est\u00e1 configurada"
+    }
+  },
+  "options": {
+    "step": {
+      "light_options": {
+        "title": "Fanpy — Funciones de Luz",
+        "description": "Actualiza las capacidades de la luz del ventilador.",
+        "data": {
+          "has_light": "Tiene luz",
+          "has_light_temperature": "Control de temperatura de color",
+          "has_light_intensity": "Control de intensidad"
+        }
+      },
+      "light_temp_modes": {
+        "title": "Fanpy — Modos de Temperatura de Luz",
+        "description": "Selecciona qué modos de temperatura de color soporta la luz de este ventilador.",
+        "data": {
+          "has_light_temperature_calida": "Luz cálida",
+          "has_light_temperature_neutra": "Luz neutra",
+          "has_light_temperature_fria": "Luz fría"
+        }
+      },
+      "broadlink_config": {
+        "title": "Fanpy — Configuración Broadlink",
+        "description": "Configura el dispositivo Broadlink y los comandos remotos para cada función.",
+        "data": {
+          "broadlink_device_id": "Entidad remota Broadlink",
+          "remote_device": "Nombre del dispositivo remoto",
+          "command_on": "Comando encender",
+          "command_off": "Comando apagar",
+          "command_luz_on": "Comando luz encender",
+          "command_luz_off": "Comando luz apagar",
+          "command_luz_calida": "Comando luz cálida",
+          "command_luz_neutra": "Comando luz neutra",
+          "command_luz_fria": "Comando luz fría",
+          "command_intensidad_alta": "Comando subir intensidad",
+          "command_intensidad_baja": "Comando bajar intensidad",
+          "command_velocidad_1": "Comando velocidad 1",
+          "command_velocidad_2": "Comando velocidad 2",
+          "command_velocidad_3": "Comando velocidad 3",
+          "command_velocidad_4": "Comando velocidad 4",
+          "command_velocidad_5": "Comando velocidad 5",
+          "command_velocidad_6": "Comando velocidad 6",
+          "command_velocidad_7": "Comando velocidad 7",
+          "command_velocidad_8": "Comando velocidad 8",
+          "command_velocidad_9": "Comando velocidad 9",
+          "command_velocidad_10": "Comando velocidad 10"
+        }
+      }
+    },
+    "abort": {
+      "not_supported": "Las opciones no están disponibles para instalaciones en modo directo."
     }
   }
 }

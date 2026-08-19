@@ -46,6 +46,15 @@
           "has_light_intensity": "Brightness control"
         }
       },
+      "direct_light_temp_modes": {
+        "title": "Fanpy — Light Temperature Modes",
+        "description": "Select which color temperature modes this fan light supports.",
+        "data": {
+          "has_light_temperature_calida": "Warm light",
+          "has_light_temperature_neutra": "Neutral light",
+          "has_light_temperature_fria": "Cool light"
+        }
+      },
       "helpers_speeds": {
         "title": "Fanpy — Speeds",
         "description": "Set the number of speeds this fan has.",
@@ -66,6 +75,15 @@
         "data": {
           "has_light_temperature": "Color temperature control",
           "has_light_intensity": "Brightness control"
+        }
+      },
+      "helpers_light_temp_modes": {
+        "title": "Fanpy — Light Temperature Modes",
+        "description": "Select which color temperature modes this fan light supports.",
+        "data": {
+          "has_light_temperature_calida": "Warm light",
+          "has_light_temperature_neutra": "Neutral light",
+          "has_light_temperature_fria": "Cool light"
         }
       },
       "helpers_timer": {
@@ -93,6 +111,7 @@
           "command_luz_on": "Light ON command",
           "command_luz_off": "Light OFF command",
           "command_luz_calida": "Warm light command",
+          "command_luz_neutra": "Neutral light command",
           "command_luz_fria": "Cold light command",
           "command_intensidad_alta": "Brightness up command",
           "command_intensidad_baja": "Brightness down command",
@@ -117,6 +136,58 @@
     },
     "abort": {
       "already_configured": "This area is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "light_options": {
+        "title": "Fanpy — Light Features",
+        "description": "Update the fan light capabilities.",
+        "data": {
+          "has_light": "Has light",
+          "has_light_temperature": "Color temperature control",
+          "has_light_intensity": "Brightness control"
+        }
+      },
+      "light_temp_modes": {
+        "title": "Fanpy — Light Temperature Modes",
+        "description": "Select which color temperature modes this fan light supports.",
+        "data": {
+          "has_light_temperature_calida": "Warm light",
+          "has_light_temperature_neutra": "Neutral light",
+          "has_light_temperature_fria": "Cool light"
+        }
+      },
+      "broadlink_config": {
+        "title": "Fanpy — Broadlink Configuration",
+        "description": "Configure the Broadlink device and the remote commands for each function.",
+        "data": {
+          "broadlink_device_id": "Broadlink remote entity",
+          "remote_device": "Remote device name",
+          "command_on": "Power ON command",
+          "command_off": "Power OFF command",
+          "command_luz_on": "Light ON command",
+          "command_luz_off": "Light OFF command",
+          "command_luz_calida": "Warm light command",
+          "command_luz_neutra": "Neutral light command",
+          "command_luz_fria": "Cool light command",
+          "command_intensidad_alta": "Brightness up command",
+          "command_intensidad_baja": "Brightness down command",
+          "command_velocidad_1": "Speed 1 command",
+          "command_velocidad_2": "Speed 2 command",
+          "command_velocidad_3": "Speed 3 command",
+          "command_velocidad_4": "Speed 4 command",
+          "command_velocidad_5": "Speed 5 command",
+          "command_velocidad_6": "Speed 6 command",
+          "command_velocidad_7": "Speed 7 command",
+          "command_velocidad_8": "Speed 8 command",
+          "command_velocidad_9": "Speed 9 command",
+          "command_velocidad_10": "Speed 10 command"
+        }
+      }
+    },
+    "abort": {
+      "not_supported": "Options are not available for direct mode installations."
     }
   }
 }
