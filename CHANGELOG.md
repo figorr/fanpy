@@ -1,3 +1,10 @@
+## [3.1.2](https://github.com/figorr/fanpy/compare/v3.1.1...v3.1.2) (2026-09-14)
+
+
+### Bug Fixes
+
+* rename resync button entity and skip speed select update on turn off ([9b3a3dc](https://github.com/figorr/fanpy/commit/9b3a3dc1684cb3adf850af3d3191f11714804315))
+
 ## [3.1.1](https://github.com/figorr/fanpy/compare/v3.1.0...v3.1.1) (2026-08-25)
 
 
